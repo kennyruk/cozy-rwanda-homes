@@ -10,11 +10,21 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ExploreRouteImport } from './routes/explore'
+import { Route as LandlordRouteImport } from './routes/landlord'
+import { Route as MessagesRouteImport } from './routes/messages'
+import { Route as SavedRouteImport } from './routes/saved'
+import { Route as PropertiesPropertyIdRouteImport } from './routes/properties.$propertyId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExploreRoute = ExploreRouteImport.update({
@@ -22,31 +32,93 @@ const ExploreRoute = ExploreRouteImport.update({
   path: '/explore',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LandlordRoute = LandlordRouteImport.update({
+  id: '/landlord',
+  path: '/landlord',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MessagesRoute = MessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SavedRoute = SavedRouteImport.update({
+  id: '/saved',
+  path: '/saved',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PropertiesPropertyIdRoute = PropertiesPropertyIdRouteImport.update({
+  id: '/properties/$propertyId',
+  path: '/properties/$propertyId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
   '/explore': typeof ExploreRoute
+  '/landlord': typeof LandlordRoute
+  '/messages': typeof MessagesRoute
+  '/saved': typeof SavedRoute
+  '/properties/$propertyId': typeof PropertiesPropertyIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
   '/explore': typeof ExploreRoute
+  '/landlord': typeof LandlordRoute
+  '/messages': typeof MessagesRoute
+  '/saved': typeof SavedRoute
+  '/properties/$propertyId': typeof PropertiesPropertyIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
   '/explore': typeof ExploreRoute
+  '/landlord': typeof LandlordRoute
+  '/messages': typeof MessagesRoute
+  '/saved': typeof SavedRoute
+  '/properties/$propertyId': typeof PropertiesPropertyIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/explore'
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/explore'
+    | '/landlord'
+    | '/messages'
+    | '/saved'
+    | '/properties/$propertyId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/explore'
-  id: '__root__' | '/' | '/explore'
+  to:
+    | '/'
+    | '/dashboard'
+    | '/explore'
+    | '/landlord'
+    | '/messages'
+    | '/saved'
+    | '/properties/$propertyId'
+  id:
+    | '__root__'
+    | '/'
+    | '/dashboard'
+    | '/explore'
+    | '/landlord'
+    | '/messages'
+    | '/saved'
+    | '/properties/$propertyId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DashboardRoute: typeof DashboardRoute
   ExploreRoute: typeof ExploreRoute
+  LandlordRoute: typeof LandlordRoute
+  MessagesRoute: typeof MessagesRoute
+  SavedRoute: typeof SavedRoute
+  PropertiesPropertyIdRoute: typeof PropertiesPropertyIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -58,6 +130,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/explore': {
       id: '/explore'
       path: '/explore'
@@ -65,12 +144,45 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExploreRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/landlord': {
+      id: '/landlord'
+      path: '/landlord'
+      fullPath: '/landlord'
+      preLoaderRoute: typeof LandlordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/messages': {
+      id: '/messages'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof MessagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/saved': {
+      id: '/saved'
+      path: '/saved'
+      fullPath: '/saved'
+      preLoaderRoute: typeof SavedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/properties/$propertyId': {
+      id: '/properties/$propertyId'
+      path: '/properties/$propertyId'
+      fullPath: '/properties/$propertyId'
+      preLoaderRoute: typeof PropertiesPropertyIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DashboardRoute: DashboardRoute,
   ExploreRoute: ExploreRoute,
+  LandlordRoute: LandlordRoute,
+  MessagesRoute: MessagesRoute,
+  SavedRoute: SavedRoute,
+  PropertiesPropertyIdRoute: PropertiesPropertyIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
