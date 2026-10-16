@@ -14,13 +14,180 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      conversations: {
+        Row: {
+          created_at: string
+          id: string
+          landlord_id: string
+          last_message_at: string
+          property_id: string
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          landlord_id: string
+          last_message_at?: string
+          property_id: string
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          landlord_id?: string
+          last_message_at?: string
+          property_id?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversations_landlord_id_fkey"
+            columns: ["landlord_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          body: string
+          conversation_id: string
+          created_at: string
+          id: string
+          sender_id: string
+        }
+        Insert: {
+          body: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          sender_id: string
+        }
+        Update: {
+          body?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          full_name: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          full_name?: string
+          id: string
+        }
+        Update: {
+          created_at?: string
+          full_name?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      properties: {
+        Row: {
+          amenities: string[]
+          available: boolean
+          bathrooms: number
+          bedrooms: number
+          created_at: string
+          description: string
+          district: string
+          id: string
+          images: string[]
+          neighbourhood: string
+          owner_id: string
+          price: number
+          property_type: string
+          title: string
+        }
+        Insert: {
+          amenities?: string[]
+          available?: boolean
+          bathrooms?: number
+          bedrooms?: number
+          created_at?: string
+          description?: string
+          district: string
+          id?: string
+          images?: string[]
+          neighbourhood?: string
+          owner_id: string
+          price: number
+          property_type: string
+          title: string
+        }
+        Update: {
+          amenities?: string[]
+          available?: boolean
+          bathrooms?: number
+          bedrooms?: number
+          created_at?: string
+          description?: string
+          district?: string
+          id?: string
+          images?: string[]
+          neighbourhood?: string
+          owner_id?: string
+          price?: number
+          property_type?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "properties_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_conversation_participant: {
+        Args: { _conversation_id: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
