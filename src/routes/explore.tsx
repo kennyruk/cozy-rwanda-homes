@@ -5,7 +5,7 @@ import { PageShell } from "../components/smart-rent/layout";
 import { CardSkeletons, EmptyState, PropertyCard } from "../components/smart-rent/ui";
 import { fetchListings, PROPERTY_TYPES } from "../lib/listings";
 
-type SearchParams = { location?: string; type?: string; maxPrice?: number; beds?: number };
+type SearchParams = { location?: string | undefined; type?: string | undefined; maxPrice?: number | undefined; beds?: number | undefined };
 
 export const Route = createFileRoute("/explore")({
   validateSearch: (s: Record<string, unknown>): SearchParams => ({
