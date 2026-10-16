@@ -1,16 +1,68 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Grid2X2, List, SlidersHorizontal, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { PageShell } from "../components/smart-rent/layout";
-import { PropertyCard } from "../components/smart-rent/ui";
-import { properties } from "../data/properties";
+import { CardSkeletons, EmptyState, PropertyCard } from "../components/smart-rent/ui";
+import { fetchListings, PROPERTY_TYPES } from "../lib/listings";
 
-type SearchParams = { location?: string; type?: string };
-export const Route = createFileRoute("/explore")({ validateSearch: (search: Record<string, unknown>): SearchParams => ({ location: typeof search.location === "string" ? search.location : "", type: typeof search.type === "string" ? search.type : "" }), head: () => ({ meta: [{ title: "Explore rental homes | Smart Rent" },{ name: "description", content: "Browse rental homes across Rwanda by location, price, type and amenities." },{ property: "og:title", content: "Explore homes | Smart Rent" },{ property: "og:description", content: "Browse trusted rental homes across Rwanda." },{ property: "og:type", content: "website" },{ name: "twitter:card", content: "summary_large_image" }] }), component: ExplorePage });
+type SearchParams = { location?: string; type?: string; maxPrice?: number; beds?: number };
+
+export const Route = createFileRoute("/explore")({
+  validateSearch: (s: Record<string, unknown>): SearchParams => ({
+    location: typeof s["location"] === "string" ? s["location"] : undefined,
+    type: typeof s["type"] === "string" && s["type"] ? s["type"] : undefined,
+    maxPrice: Number(s["maxPrice"]) > 0 ? Number(s["maxPrice"]) : undefined,
+    beds: Number(s["beds"]) > 0 ? Number(s["beds"]) : undefined,
+  }),
+  head: () => ({
+    meta: [
+      { title: "Explore rental homes | Smart Rent" },
+      { name: "description", content: "Browse rental homes across Rwanda by location, price, type and bedrooms." },
+      { property: "og:title", content: "Explore rental homes | Smart Rent" },
+      { property: "og:description", content: "Browse rental homes listed by landlords across Rwanda." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: ExplorePage,
+});
 
 function ExplorePage() {
-  const search = Route.useSearch(); const navigate = useNavigate(); const [type, setType] = useState(search.type ?? ""); const [location, setLocation] = useState(search.location ?? ""); const [mobileFilters, setMobileFilters] = useState(false); const [layout, setLayout] = useState<"grid"|"list">("grid");
-  const filtered = useMemo(() => properties.filter((p) => (!location || p.location.toLowerCase().includes(location.toLowerCase()) || p.district.toLowerCase().includes(location.toLowerCase())) && (!type || p.type === type)), [location, type]);
-  const filters = <div className="filter-content"><div className="filter-heading"><h2>Filters</h2><button onClick={() => setMobileFilters(false)} aria-label="Close filters"><X /></button></div><label>Location<input value={location} onChange={(e) => setLocation(e.target.value)} placeholder="City or district" /></label><label>Property type<select value={type} onChange={(e) => setType(e.target.value)}><option value="">All property types</option><option>House</option><option>Apartment</option><option>Room</option></select></label><label>Monthly price<select><option>Any price</option><option>Under 300,000 RWF</option><option>300,000 – 600,000 RWF</option><option>600,000+ RWF</option></select></label><label>Bedrooms<select><option>Any</option><option>1+</option><option>2+</option><option>3+</option></select></label><fieldset><legend>Amenities</legend>{["Parking","Furnished","Water tank","Wi-Fi"].map((a) => <label className="check" key={a}><input type="checkbox" />{a}</label>)}</fieldset><button className="button button-primary" onClick={() => { navigate({ to: "/explore", search: { location, type } }); setMobileFilters(false); }}>Show {filtered.length} homes</button></div>;
-  return <PageShell><div className="explore-head"><div><p className="eyebrow">Rent across Rwanda</p><h1>Find a home that fits your life</h1></div><div className="explore-search"><input value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Search a location" /><button className="button button-primary">Search</button></div></div><div className="marketplace"><aside className="filter-panel">{filters}</aside><section className="results"><div className="results-toolbar"><div><strong>{filtered.length} homes</strong><span>{location ? ` near ${location}` : " across Rwanda"}</span></div><div className="toolbar-actions"><button className="mobile-filter" onClick={() => setMobileFilters(true)}><SlidersHorizontal size={18} />Filters</button><select aria-label="Sort homes"><option>Newest first</option><option>Price: low to high</option><option>Price: high to low</option></select><div className="view-toggle"><button className={layout === "grid" ? "active" : ""} onClick={() => setLayout("grid")} aria-label="Grid view"><Grid2X2 /></button><button className={layout === "list" ? "active" : ""} onClick={() => setLayout("list")} aria-label="List view"><List /></button></div></div></div>{filtered.length ? <div className={layout === "grid" ? "results-grid" : "results-list"}>{filtered.map((p) => <PropertyCard property={p} key={p.id} />)}</div> : <div className="empty-state"><h2>No homes found</h2><p>Try a nearby area or remove one of your filters.</p><button className="button button-primary" onClick={() => { setLocation(""); setType(""); }}>Clear filters</button></div>}</section></div>{mobileFilters && <div className="filter-drawer">{filters}</div>}</PageShell>;
+  const search = Route.useSearch();
+  const navigate = useNavigate({ from: "/explore" });
+  const [location, setLocation] = useState(search.location ?? "");
+  useEffect(() => setLocation(search.location ?? ""), [search.location]);
+
+  const listings = useQuery({
+    queryKey: ["listings", "explore", search],
+    queryFn: () => fetchListings({ location: search.location, type: search.type, maxPrice: search.maxPrice, minBeds: search.beds }),
+  });
+  const set = (patch: Partial<SearchParams>) => navigate({ search: (prev) => ({ ...prev, ...patch }) });
+
+  return (
+    <PageShell>
+      <div className="page-head">
+        <h1>Explore homes</h1>
+        <form className="filters" onSubmit={(e) => { e.preventDefault(); set({ location: location || undefined }); }}>
+          <input value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Search district or neighbourhood" aria-label="Location" />
+          <select value={search.type ?? ""} onChange={(e) => set({ type: e.target.value || undefined })} aria-label="Property type">
+            <option value="">All types</option>{PROPERTY_TYPES.map((t) => <option key={t}>{t}</option>)}
+          </select>
+          <select value={search.maxPrice ?? ""} onChange={(e) => set({ maxPrice: Number(e.target.value) || undefined })} aria-label="Maximum price">
+            <option value="">Any price</option><option value="200000">Up to 200,000</option><option value="400000">Up to 400,000</option><option value="700000">Up to 700,000</option><option value="1000000">Up to 1,000,000</option>
+          </select>
+          <select value={search.beds ?? ""} onChange={(e) => set({ beds: Number(e.target.value) || undefined })} aria-label="Bedrooms">
+            <option value="">Any beds</option><option value="1">1+ beds</option><option value="2">2+ beds</option><option value="3">3+ beds</option><option value="4">4+ beds</option>
+          </select>
+          <button className="button button-primary">Search</button>
+        </form>
+      </div>
+      <section className="section section-tight">
+        {listings.data && <p className="result-count">{listings.data.length} {listings.data.length === 1 ? "home" : "homes"}{search.location ? ` matching “${search.location}”` : ""}</p>}
+        {listings.isError ? <EmptyState title="Couldn't load homes" copy="Please try again in a moment." />
+          : listings.data?.length === 0 ? <EmptyState title="No homes match" copy="Try another area or loosen a filter." action={<button className="button button-ghost" onClick={() => navigate({ search: {} })}>Clear filters</button>} />
+          : <div className="property-grid">{listings.data ? listings.data.map((l) => <PropertyCard listing={l} key={l.id} />) : <CardSkeletons count={6} />}</div>}
+      </section>
+    </PageShell>
+  );
 }

@@ -1,13 +1,80 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Bath, BedDouble, Check, CheckCircle2, ChevronLeft, Heart, MapPin, MessageCircle, ShieldCheck } from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { Bath, BedDouble, Check, ChevronLeft, ImageOff, MapPin, MessageCircle } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { PageShell } from "../components/smart-rent/layout";
-import { PropertyCard } from "../components/smart-rent/ui";
-import { formatPrice, properties } from "../data/properties";
+import { EmptyState } from "../components/smart-rent/ui";
+import { useAuth } from "../lib/auth";
+import { fetchListing, formatPrice, openConversation } from "../lib/listings";
 
-export const Route = createFileRoute("/properties/$propertyId")({ head: () => ({ meta: [{ title: "Property details | Smart Rent" },{ name: "description", content: "View rental home photos, amenities, pricing and landlord details on Smart Rent." },{ property: "og:title", content: "Rental home details | Smart Rent" },{ property: "og:description", content: "Review this rental home and connect directly with the landlord." },{ property: "og:type", content: "website" },{ name: "twitter:card", content: "summary_large_image" }] }), component: PropertyDetail });
+export const Route = createFileRoute("/properties/$propertyId")({
+  head: () => ({
+    meta: [
+      { title: "Rental home | Smart Rent" },
+      { name: "description", content: "See photos, price and details of this rental home and message the landlord directly." },
+      { property: "og:title", content: "Rental home | Smart Rent" },
+      { property: "og:description", content: "See this rental home and message the landlord on Smart Rent." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: PropertyDetail,
+});
 
 function PropertyDetail() {
-  const { propertyId } = Route.useParams(); const property = properties.find((p) => p.id === propertyId) ?? properties[0]; const [requested, setRequested] = useState(false); const [saved, setSaved] = useState(false);
-  return <PageShell><div className="detail-shell"><Link to="/explore" className="back-link"><ChevronLeft size={18} />Back to homes</Link><div className="gallery"><img src={property.image} alt={property.title} /><img src={properties[1].image} alt="Living room" /><img src={properties[2].image} alt="Garden and exterior" /></div><div className="detail-grid"><article className="detail-main"><div className="detail-title"><div><div className="property-location"><MapPin size={15} />{property.location}</div><h1>{property.title}</h1></div><button className={saved ? "save-large is-saved" : "save-large"} onClick={() => setSaved(!saved)}><Heart fill={saved ? "currentColor" : "none"} />{saved ? "Saved" : "Save"}</button></div><div className="detail-facts"><span><BedDouble />{property.beds} bedrooms</span><span><Bath />{property.baths} bathrooms</span><span><ShieldCheck />{property.available ? "Available now" : "Available soon"}</span></div><section className="detail-section"><h2>About this home</h2><p>{property.description}</p></section><section className="detail-section"><h2>Amenities</h2><div className="amenities">{property.amenities.map((item) => <span key={item}><Check />{item}</span>)}</div></section><section className="detail-section"><h2>Location</h2><div className="map-placeholder"><MapPin /><strong>{property.location}</strong><span>Exact location shared after connecting</span></div></section></article><aside className="rent-card"><p className="price"><strong>{formatPrice(property.price)} RWF</strong><span>/ month</span></p><div className="landlord-mini"><div className="avatar">AM</div><div><strong>Aline Mutesi</strong>{property.verified ? <span className="verified"><CheckCircle2 />Verified landlord</span> : <span>Landlord</span>}</div></div><button className="button button-primary" onClick={() => setRequested(true)}>{requested ? <><Check /> Request sent</> : "Request to rent"}</button><Link to="/messages" className="button button-outline"><MessageCircle />Message landlord</Link><small>No payment is required to send a request.</small></aside></div><section className="similar"><h2>Similar homes nearby</h2><div className="property-grid">{properties.filter((p) => p.id !== property.id).slice(0,3).map((p) => <PropertyCard property={p} key={p.id} compact />)}</div></section></div></PageShell>;
+  const { propertyId } = Route.useParams();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [active, setActive] = useState(0);
+  const [busy, setBusy] = useState(false);
+  const q = useQuery({ queryKey: ["listing", propertyId], queryFn: () => fetchListing(propertyId) });
+  const listing = q.data;
+
+  async function message() {
+    if (!listing) return;
+    if (!user) { navigate({ to: "/auth", search: { redirect: `/properties/${listing.id}` } }); return; }
+    setBusy(true);
+    try {
+      const id = await openConversation(listing, user.id);
+      navigate({ to: "/messages", search: { c: id } });
+    } catch {
+      toast.error("Couldn't start the conversation. Please try again.");
+      setBusy(false);
+    }
+  }
+
+  if (q.isLoading) return <PageShell><div className="detail-shell"><div className="gallery-main skeleton-block" /></div></PageShell>;
+  if (!listing) return <PageShell><div className="detail-shell"><EmptyState title="Home not found" copy="This listing may have been removed." action={<Link to="/explore" className="button button-primary">Browse homes</Link>} /></div></PageShell>;
+
+  const isOwner = user?.id === listing.owner_id;
+  const images = listing.imageUrls;
+  return (
+    <PageShell>
+      <div className="detail-shell">
+        <Link to="/explore" className="back-link"><ChevronLeft size={18} />All homes</Link>
+        <div className="gallery">
+          <div className="gallery-main">{images[active] ? <img src={images[active]} alt={listing.title} /> : <div className="photo-empty"><ImageOff /></div>}</div>
+          {images.length > 1 && <div className="thumbs">{images.map((src, i) => <button key={src} className={i === active ? "active" : ""} onClick={() => setActive(i)} aria-label={`Photo ${i + 1}`}><img src={src} alt="" /></button>)}</div>}
+        </div>
+        <div className="detail-grid">
+          <article className="detail-main">
+            <div className="property-location"><MapPin size={15} />{[listing.neighbourhood, listing.district].filter(Boolean).join(", ")}</div>
+            <h1>{listing.title}</h1>
+            <div className="detail-facts"><span>{listing.property_type}</span><span><BedDouble size={17} />{listing.bedrooms} bedrooms</span><span><Bath size={17} />{listing.bathrooms} bathrooms</span></div>
+            {listing.description && <section className="detail-section"><h2>About this home</h2><p>{listing.description}</p></section>}
+            {listing.amenities.length > 0 && <section className="detail-section"><h2>Amenities</h2><div className="amenities">{listing.amenities.map((a) => <span key={a}><Check size={16} />{a}</span>)}</div></section>}
+          </article>
+          <aside className="rent-card">
+            <p className="price"><strong>{formatPrice(listing.price)} RWF</strong><span>/ month</span></p>
+            <div className="landlord-mini"><div className="avatar">{(listing.owner?.full_name || "L").slice(0, 1).toUpperCase()}</div><div><small>Listed by</small><strong>{listing.owner?.full_name || "Landlord"}</strong></div></div>
+            {!listing.available && <p className="notice">This home is currently marked as rented.</p>}
+            {isOwner
+              ? <Link to="/dashboard" className="button button-ghost">Manage your listing</Link>
+              : <button className="button button-primary" onClick={message} disabled={busy}><MessageCircle size={18} />{user ? "Message landlord" : "Sign in to message"}</button>}
+          </aside>
+        </div>
+      </div>
+    </PageShell>
+  );
 }
