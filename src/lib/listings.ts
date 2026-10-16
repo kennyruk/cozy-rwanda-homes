@@ -22,7 +22,7 @@ async function withImages(rows: (Tables<"properties"> & { owner: { full_name: st
   return rows.map((r) => ({ ...r, imageUrls: r.images.map((p) => map.get(p)).filter((u): u is string => !!u) }));
 }
 
-export type ListingFilters = { location?: string; type?: string; maxPrice?: number; minBeds?: number; ownerId?: string; limit?: number };
+export type ListingFilters = { location?: string | undefined; type?: string | undefined; maxPrice?: number | undefined; minBeds?: number | undefined; ownerId?: string | undefined; limit?: number | undefined };
 
 export async function fetchListings(f: ListingFilters = {}): Promise<Listing[]> {
   let q = supabase.from("properties").select(SELECT).order("created_at", { ascending: false });
