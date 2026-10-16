@@ -1,5 +1,0 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Heart } from "lucide-react";
-import { PageShell } from "../components/smart-rent/layout";
-export const Route = createFileRoute("/saved")({ head: () => ({ meta: [{ title: "Saved homes | Smart Rent" },{ name: "description", content: "Keep track of rental homes you love on Smart Rent." },{ property: "og:title", content: "Saved homes | Smart Rent" },{ property: "og:description", content: "Your saved Smart Rent homes." },{ property: "og:type", content: "website" },{ name: "twitter:card", content: "summary" }] }), component: Saved });
-function Saved(){ return <PageShell><div className="simple-page"><div className="empty-icon"><Heart /></div><h1>Nothing saved yet</h1><p>Tap the heart on a home you like and we’ll keep it here.</p><Link to="/explore" className="button button-primary">Explore homes</Link></div></PageShell>; }

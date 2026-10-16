@@ -1,32 +1,31 @@
 import { Link } from "@tanstack/react-router";
-import { Bath, BedDouble, CheckCircle2, Heart, MapPin } from "lucide-react";
-import { useState } from "react";
-import type { Property } from "../../data/properties";
-import { formatPrice } from "../../data/properties";
+import { Bath, BedDouble, ImageOff, MapPin } from "lucide-react";
+import { formatPrice, type Listing } from "@/lib/listings";
 
-export function PropertyCard({ property, compact = false }: { property: Property; compact?: boolean }) {
-  const [saved, setSaved] = useState(false);
+export function PropertyCard({ listing }: { listing: Listing }) {
+  const cover = listing.imageUrls[0];
   return (
-    <article className="property-card">
-      <Link to="/properties/$propertyId" params={{ propertyId: property.id }} className="property-photo">
-        <img src={property.image} alt={property.title} loading="lazy" width="1200" height="900" />
-        <span className={property.available ? "availability" : "availability availability-muted"}>
-          {property.available ? "Available now" : "Available soon"}
-        </span>
-      </Link>
-      <button className={saved ? "save-button is-saved" : "save-button"} onClick={() => setSaved(!saved)} aria-label={saved ? "Remove from saved homes" : "Save this home"}>
-        <Heart size={19} fill={saved ? "currentColor" : "none"} />
-      </button>
-      <div className="property-body">
-        <div className="property-location"><MapPin size={14} />{property.location}</div>
-        <Link to="/properties/$propertyId" params={{ propertyId: property.id }} className="property-title">{property.title}</Link>
-        <div className="price"><strong>{formatPrice(property.price)} RWF</strong><span>/ month</span></div>
-        {!compact && <div className="property-meta"><span><BedDouble size={16} />{property.beds} beds</span><span><Bath size={16} />{property.baths} baths</span>{property.verified && <span className="verified"><CheckCircle2 size={15} />Verified</span>}</div>}
+    <Link to="/properties/$propertyId" params={{ propertyId: listing.id }} className="property-card">
+      <div className="property-photo">
+        {cover ? <img src={cover} alt={listing.title} loading="lazy" /> : <div className="photo-empty"><ImageOff /></div>}
+        <span className="type-tag">{listing.property_type}</span>
       </div>
-    </article>
+      <div className="property-body">
+        <div className="property-location"><MapPin size={13} />{[listing.neighbourhood, listing.district].filter(Boolean).join(", ")}</div>
+        <h3 className="property-title">{listing.title}</h3>
+        <div className="property-foot">
+          <p className="price"><strong>{formatPrice(listing.price)} RWF</strong><span>/ month</span></p>
+          <div className="property-meta"><span><BedDouble size={15} />{listing.bedrooms}</span><span><Bath size={15} />{listing.bathrooms}</span></div>
+        </div>
+      </div>
+    </Link>
   );
 }
 
-export function SectionHeading({ eyebrow, title, copy, action }: { eyebrow?: string; title: string; copy?: string; action?: React.ReactNode }) {
-  return <div className="section-heading"><div>{eyebrow && <p className="eyebrow">{eyebrow}</p>}<h2>{title}</h2>{copy && <p>{copy}</p>}</div>{action}</div>;
+export function CardSkeletons({ count = 3 }: { count?: number }) {
+  return <>{Array.from({ length: count }, (_, i) => <div className="property-card skeleton" key={i}><div className="property-photo" /><div className="property-body"><span /><span /></div></div>)}</>;
+}
+
+export function EmptyState({ title, copy, action }: { title: string; copy: string; action?: React.ReactNode }) {
+  return <div className="empty-state"><h2>{title}</h2><p>{copy}</p>{action}</div>;
 }
