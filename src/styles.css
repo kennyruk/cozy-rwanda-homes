@@ -254,7 +254,11 @@ h1, h2, h3 { letter-spacing: -0.01em; font-weight: 800; }
   .site-header { height: 60px; }
   .nav-shell { padding: 0 16px; gap: 16px; }
   .brand img { width: 132px; }
-  .main-nav, .nav-actions .button-ghost { display: none; }
+  .nav-actions .button-ghost { display: none; }
+  .main-nav { gap: 16px; font-size: 13px; }
+}
+@media (max-width: 540px) {
+  .main-nav { display: none; }
   .mobile-nav { display: grid; grid-template-columns: repeat(5, 1fr); position: fixed; bottom: 0; left: 0; right: 0; z-index: 60; height: 64px; background: var(--card); border-top: 1px solid var(--border); }
   .mobile-nav a { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; font-weight: 600; color: var(--muted-foreground); }
   .mobile-nav svg { width: 20px; height: 20px; }
