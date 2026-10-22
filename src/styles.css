@@ -53,7 +53,7 @@ button,input,select,textarea { font: inherit; } button,a { -webkit-tap-highlight
 .mobile-nav { display: none; }
 
 /* ---------- Type & helpers ---------- */
-h1, h2, h3 { letter-spacing: -0.01em; }
+h1, h2, h3 { letter-spacing: -0.01em; font-weight: 800; }
 .eyebrow { color: var(--secondary); text-transform: uppercase; font-size: 12px; font-weight: 800; letter-spacing: .1em; margin: 0 0 10px; }
 .muted { color: var(--muted-foreground); }
 .lede { font-size: 18px; line-height: 1.65; color: var(--muted-foreground); max-width: 520px; margin: 0 0 30px; }
@@ -69,7 +69,7 @@ h1, h2, h3 { letter-spacing: -0.01em; }
 .search-bar { display: grid; grid-template-columns: 1.4fr 1fr auto; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 6px; box-shadow: 0 10px 30px color-mix(in oklab, var(--foreground) 7%, transparent); }
 .search-bar label { padding: 6px 14px; border-right: 1px solid var(--border); }
 .search-bar label:nth-child(2) { border-right: 0; }
-.search-bar span, .field-label { display: block; font-size: 11px; text-transform: uppercase; font-weight: 800; letter-spacing: .06em; color: var(--muted-foreground); margin-bottom: 2px; }
+.search-bar label > span, .field-label { display: block; font-size: 11px; text-transform: uppercase; font-weight: 800; letter-spacing: .06em; color: var(--muted-foreground); margin-bottom: 2px; }
 .search-bar input, .search-bar select { width: 100%; border: 0; outline: 0; background: transparent; font-size: 14px; color: var(--foreground); height: 26px; padding: 0; }
 .search-go { min-width: 120px; }
 
