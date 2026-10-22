@@ -22,6 +22,8 @@ export function SiteHeader() {
         <nav className="main-nav">
           <Link to="/" activeOptions={{ exact: true }} activeProps={{ className: "active" }}>Home</Link>
           <Link to="/explore" activeProps={{ className: "active" }}>Explore</Link>
+          <Link to="/how-it-works" activeProps={{ className: "active" }}>How it works</Link>
+          <Link to="/about" activeProps={{ className: "active" }}>About us</Link>
           {user && <Link to="/messages" activeProps={{ className: "active" }}>Messages</Link>}
           {user && <Link to="/dashboard" activeProps={{ className: "active" }}>My listings</Link>}
         </nav>
@@ -58,6 +60,8 @@ export function SiteFooter() {
         <div><Brand /><p>Connecting landlords and tenants across Rwanda.</p></div>
         <div className="footer-links">
           <Link to="/explore">Explore homes</Link>
+          <Link to="/how-it-works">How it works</Link>
+          <Link to="/about">About us</Link>
           <Link to="/landlord">List a property</Link>
           <span>© {new Date().getFullYear()} Smart Rent</span>
         </div>
