@@ -1,25 +1,35 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 
-export type Listing = Tables<"properties"> & { owner: { full_name: string } | null; imageUrls: string[] };
+export type Photo = { path: string; url: string };
+export type Listing = Tables<"properties"> & { owner: { full_name: string } | null; imageUrls: string[]; photos: Photo[] };
 
 export const PROPERTY_TYPES = ["Apartment", "House", "Room"] as const;
 export const DISTRICTS = ["Gasabo", "Kicukiro", "Nyarugenge", "Musanze", "Huye", "Rubavu", "Muhanga", "Rwamagana", "Nyagatare", "Rusizi"];
 export const AMENITIES = ["Parking", "Furnished", "Wi-Fi", "Water tank", "Security", "Garden", "Backup power", "Hot water"];
 export const BUCKET = "property-images";
+export const MAX_PHOTOS = 8;
 
 export const formatPrice = (price: number) => new Intl.NumberFormat("en-RW").format(price);
 
 const SELECT = "*, owner:profiles(full_name)";
 
-async function withImages(rows: (Tables<"properties"> & { owner: { full_name: string } | null })[]): Promise<Listing[]> {
-  const paths = Array.from(new Set(rows.flatMap((r) => r.images)));
+export async function signPaths(paths: string[]): Promise<Map<string, string>> {
   const map = new Map<string, string>();
-  if (paths.length) {
-    const { data } = await supabase.storage.from(BUCKET).createSignedUrls(paths, 60 * 60 * 24);
+  const unique = Array.from(new Set(paths));
+  if (unique.length) {
+    const { data } = await supabase.storage.from(BUCKET).createSignedUrls(unique, 60 * 60 * 24);
     data?.forEach((d) => { if (d.path && d.signedUrl) map.set(d.path, d.signedUrl); });
   }
-  return rows.map((r) => ({ ...r, imageUrls: r.images.map((p) => map.get(p)).filter((u): u is string => !!u) }));
+  return map;
+}
+
+async function withImages(rows: (Tables<"properties"> & { owner: { full_name: string } | null })[]): Promise<Listing[]> {
+  const map = await signPaths(rows.flatMap((r) => r.images));
+  return rows.map((r) => {
+    const photos = r.images.flatMap((path) => { const url = map.get(path); return url ? [{ path, url }] : []; });
+    return { ...r, photos, imageUrls: photos.map((p) => p.url) };
+  });
 }
 
 export type ListingFilters = { location?: string | undefined; type?: string | undefined; maxPrice?: number | undefined; minBeds?: number | undefined; ownerId?: string | undefined; limit?: number | undefined };
