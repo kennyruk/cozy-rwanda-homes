@@ -20,6 +20,7 @@ export function SiteHeader() {
       <div className="nav-shell">
         <Link to="/" className="logo-link"><Brand /></Link>
         <nav className="main-nav">
+          <Link to="/" activeOptions={{ exact: true }} activeProps={{ className: "active" }}>Home</Link>
           <Link to="/explore" activeProps={{ className: "active" }}>Explore</Link>
           {user && <Link to="/messages" activeProps={{ className: "active" }}>Messages</Link>}
           {user && <Link to="/dashboard" activeProps={{ className: "active" }}>My listings</Link>}
