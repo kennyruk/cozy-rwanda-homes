@@ -1,5 +1,7 @@
 # Smart Rent roadmap
-- [x] Build the branded public marketplace and interactive discovery flow
-- [x] Add search results and property detail experiences
-- [x] Add tenant, landlord, saved homes, chat, and listing workflows
-- [ ] Verify desktop and mobile layouts
+- [x] Real backend: landlords list properties, tenants browse, signed-in tenants message landlords
+- [x] Remove demo data
+- [x] Signed-in pages: my listings, list/edit a property, messages
+- [x] Restyle pages to the brand board; fix cropped logo
+- [x] Verify public pages on desktop and mobile
+- [ ] Sign-in-only flows (posting a listing, messaging) tested with a real account — needs the first account to be created
