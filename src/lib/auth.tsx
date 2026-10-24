@@ -22,40 +22,44 @@ async function loadRole(userId: string): Promise<AccountType | null> {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
-  const [role, setRole] = useState<AccountType | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [ready, setReady] = useState(false);
+  const [roleState, setRoleState] = useState<{ uid: string; role: AccountType | null } | null>(null);
+  const uid = session?.user.id ?? null;
 
   useEffect(() => {
-    let current: string | null = null;
-    async function apply(s: Session | null) {
-      setSession(s);
-      const uid = s?.user.id ?? null;
-      if (uid === current) { setLoading(false); return; }
-      current = uid;
-      if (!uid) { setRole(null); setLoading(false); return; }
-      setLoading(true);
-      const r = await loadRole(uid);
-      if (current === uid) { setRole(r); setLoading(false); }
-    }
-    const { data } = supabase.auth.onAuthStateChange((_event, s) => { setTimeout(() => void apply(s), 0); });
-    supabase.auth.getSession().then(({ data: { session: s } }) => apply(s));
+    const { data } = supabase.auth.onAuthStateChange((_event, s) => { setSession(s); setReady(true); });
+    supabase.auth.getSession().then(({ data: { session: s } }) => { setSession(s); setReady(true); });
     return () => data.subscription.unsubscribe();
   }, []);
 
+  useEffect(() => {
+    if (!uid) return;
+    let alive = true;
+    loadRole(uid).then((role) => { if (alive) setRoleState({ uid, role }); });
+    return () => { alive = false; };
+  }, [uid]);
+
   const chooseRole = useCallback(async (r: AccountType) => {
-    const uid = session?.user.id;
     if (!uid) return;
     const { error } = await supabase.from("user_roles").insert({ user_id: uid, role: r });
     if (error) {
       const existing = await loadRole(uid);
       if (!existing) throw error;
-      setRole(existing);
+      setRoleState({ uid, role: existing });
       return;
     }
-    setRole(r);
-  }, [session]);
+    setRoleState({ uid, role: r });
+  }, [uid]);
 
-  return <AuthContext.Provider value={{ session, user: session?.user ?? null, role, loading, chooseRole }}>{children}</AuthContext.Provider>;
+  const roleKnown = !!uid && roleState?.uid === uid;
+  const value: AuthState = {
+    session,
+    user: session?.user ?? null,
+    role: roleKnown ? roleState.role : null,
+    loading: !ready || (!!uid && !roleKnown),
+    chooseRole,
+  };
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export const useAuth = () => useContext(AuthContext);
