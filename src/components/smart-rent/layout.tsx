@@ -24,8 +24,8 @@ export function SiteHeader() {
         <nav className="main-nav">
           <Link to="/" activeOptions={{ exact: true }} activeProps={{ className: "active" }}>Home</Link>
           <Link to="/explore" activeProps={{ className: "active" }}>Explore</Link>
-          <Link to="/how-it-works" activeProps={{ className: "active" }}>How it works</Link>
-          <Link to="/about" activeProps={{ className: "active" }}>About us</Link>
+          <Link to="/how-it-works" className="nav-secondary" activeProps={{ className: "nav-secondary active" }}>How it works</Link>
+          <Link to="/about" className="nav-secondary" activeProps={{ className: "nav-secondary active" }}>About us</Link>
           {user && role && <Link to="/messages" activeProps={{ className: "active" }}>Messages</Link>}
           {isLandlord && <Link to="/dashboard" activeProps={{ className: "active" }}>My listings</Link>}
         </nav>
