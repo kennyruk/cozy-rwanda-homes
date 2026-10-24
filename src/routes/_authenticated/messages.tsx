@@ -49,7 +49,7 @@ function when(iso: string) {
 
 function MessagesPage() {
   const { c } = Route.useSearch();
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   const navigate = useNavigate({ from: "/messages" });
   const qc = useQueryClient();
   const uid = user?.id;
@@ -98,7 +98,7 @@ function MessagesPage() {
           <h1>Messages</h1>
           {convs.isError ? <p className="muted">Couldn't load conversations.</p>
             : convs.isLoading ? <div className="skeleton-block inbox-skeleton" />
-            : list.length === 0 ? <div className="inbox-empty"><p>No conversations yet.</p><p className="muted">Open a home you like and choose “Message landlord”.</p><Link to="/explore" className="button button-primary button-small">Browse homes</Link></div>
+            : list.length === 0 ? <div className="inbox-empty"><p>No conversations yet.</p>{role === "landlord" ? <p className="muted">When tenants message you about your homes, their messages appear here.</p> : <><p className="muted">Open a home you like and choose “Message landlord”.</p><Link to="/explore" className="button button-primary button-small">Browse homes</Link></>}</div>
             : list.map((x) => (
               <button key={x.id} className={x.id === c ? "inbox-item active" : "inbox-item"} onClick={() => navigate({ to: ".", search: { c: x.id } })}>
                 <div className="avatar">{otherName(x).slice(0, 1).toUpperCase()}</div>
