@@ -65,6 +65,11 @@ function AuthPage() {
       if (search.redirect) back.searchParams.set("redirect", safeRedirect(search.redirect));
       const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { full_name: name.trim(), account_type: type }, emailRedirectTo: back.toString() } });
       if (error) toast.error(error.message);
+      else if (data.user && (data.user.identities ?? []).length === 0) {
+        // The email already has an account: no confirmation email is sent in this case.
+        toast.error("This email already has a Smart Rent account. Sign in instead, or use a different email.");
+        setMode("signin");
+      }
       else if (!data.session) setSent(true);
     } else {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
@@ -94,6 +99,8 @@ function AuthPage() {
           {sent ? <>
             <h1>Check your email</h1>
             <p className="muted">We sent a confirmation link to <strong>{email}</strong>. Open it to finish creating your {type} account.</p>
+            <p className="muted">It can take a minute. If you don't see it, check your spam or promotions folder.</p>
+            <button type="button" className="button button-ghost full" onClick={() => { setSent(false); setMode("signin"); }}>Back to sign in</button>
           </> : <>
             <AccountTypeTabs value={type} onChange={setType} />
             <h1>{title}</h1>
