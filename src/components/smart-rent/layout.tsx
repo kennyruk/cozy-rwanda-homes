@@ -33,7 +33,7 @@ export function SiteHeader() {
           {!loading && !user && <Link to="/auth" search={{ as: "landlord", redirect: "/landlord" }} className="button button-ghost button-small"><Plus size={16} />List a property</Link>}
           {isLandlord && <Link to="/landlord" className="button button-ghost button-small"><Plus size={16} />List a property</Link>}
           {!loading && (user
-            ? <>{role && <span className="account-badge">{role === "landlord" ? "Landlord" : "Tenant"}</span>}<button className="button button-quiet button-small" onClick={signOut}>Sign out</button></>
+            ? <>{role && <Link to="/account" className="account-badge account-link" title="My account"><UserRound size={14} />{role === "landlord" ? "Landlord" : "Tenant"}</Link>}<button className="button button-quiet button-small" onClick={signOut}>Sign out</button></>
             : <Link to="/auth" className="button button-primary button-small">Sign in</Link>)}
         </div>
       </div>
@@ -55,7 +55,7 @@ export function MobileNav() {
         ? <Link to="/dashboard" activeProps={{ className: "active" }}><LayoutGrid /><span>Listings</span></Link>
         : !user
           ? <Link to="/auth" activeProps={{ className: "active" }}><UserRound /><span>Sign in</span></Link>
-          : <Link to="/about" activeProps={{ className: "active" }}><UserRound /><span>About</span></Link>}
+          : <Link to="/account" activeProps={{ className: "active" }}><UserRound /><span>Account</span></Link>}
     </nav>
   );
 }

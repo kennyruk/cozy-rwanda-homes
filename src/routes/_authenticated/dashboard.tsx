@@ -62,6 +62,7 @@ function Dashboard() {
         </div>
         <div className="head-actions">
           <Link to="/messages" className="button button-ghost"><MessageCircle size={17} />Messages</Link>
+          <Link to="/account" className="button button-quiet">My account</Link>
           <Link to="/landlord" className="button button-primary"><Plus size={17} />New listing</Link>
         </div>
       </div>
