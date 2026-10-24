@@ -42,7 +42,7 @@ function AuthPage() {
   const search = Route.useSearch();
   const { user, role, loading } = useAuth();
   const navigate = useNavigate();
-  const [type, setType] = useState<AccountType>(search.as ?? "tenant");
+  const [type, setType] = useState<AccountType>(search.as ?? (/^\/(landlord|dashboard)/.test(search.redirect ?? "") ? "landlord" : "tenant"));
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
