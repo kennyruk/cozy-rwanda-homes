@@ -288,3 +288,15 @@ h1, h2, h3 { letter-spacing: -0.01em; font-weight: 800; }
   .chat-body { padding: 16px 12px; }
   .listing-form fieldset { padding: 18px 16px; }
 }
+
+/* ---------- Account types ---------- */
+.account-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; background: var(--muted); border-radius: var(--radius-md); margin: 0 0 22px; }
+.account-tabs button { display: flex; align-items: center; justify-content: center; gap: 8px; height: 40px; border: 0; background: transparent; border-radius: calc(var(--radius-md) - 2px); font: inherit; font-size: 14px; font-weight: 700; color: var(--muted-foreground); cursor: pointer; }
+.account-tabs button.active { background: var(--card); color: var(--primary); box-shadow: 0 1px 2px color-mix(in oklab, var(--foreground) 12%, transparent); }
+.role-options { display: flex; flex-direction: column; gap: 10px; }
+.role-option { display: flex; align-items: center; gap: 14px; text-align: left; padding: 16px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--card); font: inherit; cursor: pointer; color: var(--primary); }
+.role-option:hover:not(:disabled) { border-color: var(--secondary); }
+.role-option:disabled { opacity: .6; cursor: wait; }
+.role-option span { display: flex; flex-direction: column; gap: 2px; color: var(--foreground); }
+.role-option small { color: var(--muted-foreground); font-size: 13px; }
+.account-badge { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--secondary); padding: 0 4px; }

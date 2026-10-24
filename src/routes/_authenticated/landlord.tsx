@@ -7,7 +7,7 @@ import { PageShell } from "@/components/smart-rent/layout";
 import { EmptyState } from "@/components/smart-rent/ui";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
-import { AMENITIES, BUCKET, DISTRICTS, fetchListing, MAX_PHOTOS, PROPERTY_TYPES, type Photo } from "@/lib/listings";
+import { AMENITIES, BUCKET, DISTRICTS, fetchListing, formatPrice, MAX_PHOTOS, MAX_PRICE, parsePrice, PROPERTY_TYPES, type Photo } from "@/lib/listings";
 
 export const Route = createFileRoute("/_authenticated/landlord")({
   validateSearch: (s: Record<string, unknown>): { edit?: string | undefined } => ({ edit: typeof s["edit"] === "string" ? s["edit"] : undefined }),
@@ -30,7 +30,7 @@ const EMPTY: Form = { title: "", property_type: "Apartment", district: "Gasabo",
 
 function LandlordPage() {
   const { edit } = Route.useSearch();
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   const navigate = useNavigate();
   const qc = useQueryClient();
   const [form, setForm] = useState<Form>(EMPTY);
@@ -42,7 +42,7 @@ function LandlordPage() {
   useEffect(() => {
     const l = existing.data;
     if (!l) return;
-    setForm({ title: l.title, property_type: l.property_type, district: l.district, neighbourhood: l.neighbourhood, price: String(l.price), bedrooms: String(l.bedrooms), bathrooms: String(l.bathrooms), description: l.description, amenities: l.amenities, available: l.available });
+    setForm({ title: l.title, property_type: l.property_type, district: l.district, neighbourhood: l.neighbourhood, price: formatPrice(l.price), bedrooms: String(l.bedrooms), bathrooms: String(l.bathrooms), description: l.description, amenities: l.amenities, available: l.available });
     setKept(l.photos);
   }, [existing.data]);
   useEffect(() => () => added.forEach((p) => URL.revokeObjectURL(p.preview)), [added]);
@@ -61,8 +61,8 @@ function LandlordPage() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!user) return;
-    const price = Number(form.price);
-    if (!Number.isFinite(price) || price <= 0) { toast.error("Enter a monthly price in RWF."); return; }
+    const price = parsePrice(form.price);
+    if (price === null) { toast.error(`Enter a monthly rent between 1 and ${formatPrice(MAX_PRICE)} RWF.`); return; }
     if (total === 0) { toast.error("Add at least one photo."); return; }
     setBusy(true);
     try {
@@ -76,7 +76,7 @@ function LandlordPage() {
       }
       const row = {
         title: form.title.trim(), property_type: form.property_type, district: form.district, neighbourhood: form.neighbourhood.trim(),
-        price: Math.round(price), bedrooms: Number(form.bedrooms) || 0, bathrooms: Number(form.bathrooms) || 0,
+        price, bedrooms: Number(form.bedrooms) || 0, bathrooms: Number(form.bathrooms) || 0,
         description: form.description.trim(), amenities: form.amenities, available: form.available,
         images: [...kept.map((k) => k.path), ...uploaded],
       };
@@ -101,6 +101,9 @@ function LandlordPage() {
     }
   }
 
+  if (role !== "landlord") {
+    return <PageShell><div className="form-shell"><EmptyState title="Landlord accounts only" copy="Your account is a tenant account, so you can browse homes and message landlords. To list a home, sign up with a separate landlord account." action={<Link to="/explore" className="button button-primary">Browse homes</Link>} /></div></PageShell>;
+  }
   if (edit && existing.isLoading) return <PageShell><div className="form-shell"><div className="skeleton-block form-skeleton" /></div></PageShell>;
   if (edit && (!existing.data || existing.data.owner_id !== user?.id)) {
     return <PageShell><div className="form-shell"><EmptyState title="Listing not found" copy="You can only edit homes you listed." action={<Link to="/dashboard" className="button button-primary">My listings</Link>} /></div></PageShell>;
@@ -118,7 +121,7 @@ function LandlordPage() {
             <label className="field">Title<input required minLength={3} maxLength={120} value={form.title} onChange={(e) => set("title", e.target.value)} placeholder="e.g. Two-bedroom apartment near Kimironko market" /></label>
             <div className="field-row">
               <label className="field">Type<select value={form.property_type} onChange={(e) => set("property_type", e.target.value)}>{PROPERTY_TYPES.map((t) => <option key={t}>{t}</option>)}</select></label>
-              <label className="field">Monthly rent (RWF)<input required type="number" min={1} step={1000} inputMode="numeric" value={form.price} onChange={(e) => set("price", e.target.value)} placeholder="350000" /></label>
+              <label className="field">Monthly rent (RWF)<input required inputMode="numeric" value={form.price} onChange={(e) => { const d = e.target.value.replace(/[^0-9]/g, "").slice(0, 9); set("price", d ? formatPrice(Number(d)) : ""); }} placeholder="e.g. 750,000" /></label>
             </div>
             <div className="field-row">
               <label className="field">District<select value={form.district} onChange={(e) => set("district", e.target.value)}>{DISTRICTS.map((d) => <option key={d}>{d}</option>)}</select></label>

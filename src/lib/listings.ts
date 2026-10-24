@@ -12,6 +12,17 @@ export const MAX_PHOTOS = 8;
 
 export const formatPrice = (price: number) => new Intl.NumberFormat("en-RW").format(price);
 
+/** Highest monthly rent a listing can have, in RWF. */
+export const MAX_PRICE = 100_000_000;
+
+/** Reads a typed rent like "1,200,000" or "850000 RWF" into a whole number of RWF; null if empty or out of range. */
+export function parsePrice(input: string): number | null {
+  const digits = input.replace(/[^0-9]/g, "");
+  if (!digits) return null;
+  const n = Number(digits);
+  return n > 0 && n <= MAX_PRICE ? n : null;
+}
+
 const SELECT = "*, owner:profiles(full_name)";
 
 export async function signPaths(paths: string[]): Promise<Map<string, string>> {

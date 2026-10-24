@@ -1,14 +1,16 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { Home, LayoutGrid, MessageCircle, Plus, Search, UserRound } from "lucide-react";
+import { Home, Info, LayoutGrid, MessageCircle, Plus, Search, UserRound } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
+import { RoleChooser } from "./account";
 import { Brand } from "./brand";
 
 export function SiteHeader() {
-  const { user, loading } = useAuth();
+  const { user, role, loading } = useAuth();
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const isLandlord = role === "landlord";
   async function signOut() {
     await qc.cancelQueries();
     qc.clear();
@@ -24,13 +26,14 @@ export function SiteHeader() {
           <Link to="/explore" activeProps={{ className: "active" }}>Explore</Link>
           <Link to="/how-it-works" activeProps={{ className: "active" }}>How it works</Link>
           <Link to="/about" activeProps={{ className: "active" }}>About us</Link>
-          {user && <Link to="/messages" activeProps={{ className: "active" }}>Messages</Link>}
-          {user && <Link to="/dashboard" activeProps={{ className: "active" }}>My listings</Link>}
+          {user && role && <Link to="/messages" activeProps={{ className: "active" }}>Messages</Link>}
+          {isLandlord && <Link to="/dashboard" activeProps={{ className: "active" }}>My listings</Link>}
         </nav>
         <div className="nav-actions">
-          <Link to="/landlord" className="button button-ghost button-small"><Plus size={16} />List a property</Link>
+          {!loading && !user && <Link to="/auth" search={{ as: "landlord", redirect: "/landlord" }} className="button button-ghost button-small"><Plus size={16} />List a property</Link>}
+          {isLandlord && <Link to="/landlord" className="button button-ghost button-small"><Plus size={16} />List a property</Link>}
           {!loading && (user
-            ? <button className="button button-quiet button-small" onClick={signOut}>Sign out</button>
+            ? <>{role && <span className="account-badge">{role === "landlord" ? "Landlord" : "Tenant"}</span>}<button className="button button-quiet button-small" onClick={signOut}>Sign out</button></>
             : <Link to="/auth" className="button button-primary button-small">Sign in</Link>)}
         </div>
       </div>
@@ -39,16 +42,20 @@ export function SiteHeader() {
 }
 
 export function MobileNav() {
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   return (
     <nav className="mobile-nav">
       <Link to="/" activeOptions={{ exact: true }} activeProps={{ className: "active" }}><Home /><span>Home</span></Link>
       <Link to="/explore" activeProps={{ className: "active" }}><Search /><span>Explore</span></Link>
-      <Link to="/landlord" activeProps={{ className: "active" }}><Plus /><span>List</span></Link>
+      {role === "landlord" && <Link to="/landlord" activeProps={{ className: "active" }}><Plus /><span>List</span></Link>}
+      {role === "tenant" && <Link to="/how-it-works" activeProps={{ className: "active" }}><Info /><span>Help</span></Link>}
+      {!user && <Link to="/auth" search={{ as: "landlord", redirect: "/landlord" }}><Plus /><span>List</span></Link>}
       <Link to="/messages" activeProps={{ className: "active" }}><MessageCircle /><span>Messages</span></Link>
-      {user
+      {role === "landlord"
         ? <Link to="/dashboard" activeProps={{ className: "active" }}><LayoutGrid /><span>Listings</span></Link>
-        : <Link to="/auth" activeProps={{ className: "active" }}><UserRound /><span>Sign in</span></Link>}
+        : !user
+          ? <Link to="/auth" activeProps={{ className: "active" }}><UserRound /><span>Sign in</span></Link>
+          : <Link to="/about" activeProps={{ className: "active" }}><UserRound /><span>About</span></Link>}
     </nav>
   );
 }
@@ -62,7 +69,7 @@ export function SiteFooter() {
           <Link to="/explore">Explore homes</Link>
           <Link to="/how-it-works">How it works</Link>
           <Link to="/about">About us</Link>
-          <Link to="/landlord">List a property</Link>
+          <Link to="/auth" search={{ as: "landlord", redirect: "/landlord" }}>For landlords</Link>
           <span>© {new Date().getFullYear()} Smart Rent</span>
         </div>
       </div>
@@ -71,5 +78,7 @@ export function SiteFooter() {
 }
 
 export function PageShell({ children, footer = true }: { children: React.ReactNode; footer?: boolean }) {
-  return <><SiteHeader /><main className="page-main">{children}</main>{footer && <SiteFooter />}<MobileNav /></>;
+  const { user, role, loading } = useAuth();
+  const needsRole = !loading && !!user && !role;
+  return <><SiteHeader /><main className="page-main">{needsRole ? <RoleChooser /> : children}</main>{footer && <SiteFooter />}<MobileNav /></>;
 }

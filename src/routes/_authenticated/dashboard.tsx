@@ -24,10 +24,10 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 });
 
 function Dashboard() {
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   const qc = useQueryClient();
   const uid = user?.id;
-  const listings = useQuery({ queryKey: ["listings", "mine", uid], queryFn: () => fetchListings({ ownerId: uid }), enabled: !!uid });
+  const listings = useQuery({ queryKey: ["listings", "mine", uid], queryFn: () => fetchListings({ ownerId: uid }), enabled: !!uid && role === "landlord" });
 
   const toggle = useMutation({
     mutationFn: async (l: Listing) => {
@@ -49,6 +49,9 @@ function Dashboard() {
   });
 
   const rows = listings.data;
+  if (role !== "landlord") {
+    return <PageShell><section className="section"><EmptyState title="Landlord accounts only" copy="Tenant accounts can browse homes and message landlords. Your conversations are in Messages." action={<Link to="/messages" className="button button-primary">Open messages</Link>} /></section></PageShell>;
+  }
   return (
     <PageShell>
       <div className="page-head page-head-row">

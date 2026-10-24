@@ -24,7 +24,7 @@ export const Route = createFileRoute("/properties/$propertyId")({
 
 function PropertyDetail() {
   const { propertyId } = Route.useParams();
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   const navigate = useNavigate();
   const [active, setActive] = useState(0);
   const [busy, setBusy] = useState(false);
@@ -33,7 +33,7 @@ function PropertyDetail() {
 
   async function message() {
     if (!listing) return;
-    if (!user) { navigate({ to: "/auth", search: { redirect: `/properties/${listing.id}` } }); return; }
+    if (!user) { navigate({ to: "/auth", search: { as: "tenant", redirect: `/properties/${listing.id}` } }); return; }
     setBusy(true);
     try {
       const id = await openConversation(listing, user.id);
@@ -71,7 +71,9 @@ function PropertyDetail() {
             {!listing.available && <p className="notice">This home is currently marked as rented.</p>}
             {isOwner
               ? <Link to="/dashboard" className="button button-ghost">Manage your listing</Link>
-              : <button className="button button-primary" onClick={message} disabled={busy}><MessageCircle size={18} />{user ? "Message landlord" : "Sign in to message"}</button>}
+              : role === "landlord"
+                ? <p className="notice">You're signed in as a landlord. Use a tenant account to message landlords.</p>
+                : <button className="button button-primary" onClick={message} disabled={busy}><MessageCircle size={18} />{user ? "Message landlord" : "Sign in to message"}</button>}
           </aside>
         </div>
       </div>
