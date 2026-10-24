@@ -5,3 +5,5 @@
 - [x] Restyle pages to the brand board; fix cropped logo
 - [x] Verify public pages on desktop and mobile
 - [ ] Sign-in-only flows (posting a listing, messaging) tested with a real account — needs the first account to be created
+- [x] Fix rent box so prices above 500,000 RWF work
+- [x] Separate tenant and landlord accounts; only landlords list, only tenants message
