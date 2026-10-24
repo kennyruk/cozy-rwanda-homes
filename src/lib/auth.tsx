@@ -55,7 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value: AuthState = {
     session,
     user: session?.user ?? null,
-    role: roleKnown ? roleState.role : null,
+    role: roleKnown && roleState ? roleState.role : null,
     loading: !ready || (!!uid && !roleKnown),
     chooseRole,
   };
