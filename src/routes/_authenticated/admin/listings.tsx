@@ -91,7 +91,7 @@ function ListingsPage() {
                       <div><strong>{l.title}</strong><small>{[l.neighbourhood, l.district].filter(Boolean).join(", ")} · {l.property_type} · {l.bedrooms} bed</small></div>
                     </div>
                   </td>
-                  <td><Link to="/admin/users" search={{}} className="adm-link">{l.owner?.full_name || "Landlord"}</Link></td>
+                  <td><Link to="/admin/listings" search={{ owner: l.owner_id, status }} className="adm-link" title="Only this landlord's homes">{l.owner?.full_name || "Landlord"}</Link></td>
                   <td className="num adm-num">{formatPrice(l.price)} RWF</td>
                   <td>{fmtDate(l.created_at)}</td>
                   <td><span className={l.available ? "adm-dot live" : "adm-dot off"}>{l.available ? "Live" : "Hidden"}</span></td>

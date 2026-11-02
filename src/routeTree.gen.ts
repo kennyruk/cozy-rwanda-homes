@@ -21,6 +21,10 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedLandlordRouteImport } from './routes/_authenticated/landlord'
 import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
 import { Route as PropertiesPropertyIdRouteImport } from './routes/properties.$propertyId'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
+import { Route as AuthenticatedAdminListingsRouteImport } from './routes/_authenticated/admin/listings'
+import { Route as AuthenticatedAdminMessagesRouteImport } from './routes/_authenticated/admin/messages'
+import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -81,6 +85,28 @@ const PropertiesPropertyIdRoute = PropertiesPropertyIdRouteImport.update({
   path: '/properties/$propertyId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAdminRouteRoute,
+} as any)
+const AuthenticatedAdminListingsRoute =
+  AuthenticatedAdminListingsRouteImport.update({
+    id: '/listings',
+    path: '/listings',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminMessagesRoute =
+  AuthenticatedAdminMessagesRouteImport.update({
+    id: '/messages',
+    path: '/messages',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AuthenticatedAdminRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -88,12 +114,16 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/explore': typeof ExploreRoute
   '/how-it-works': typeof HowItWorksRoute
-  '/admin': typeof AuthenticatedAdminRouteRoute
+  '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/account': typeof AuthenticatedAccountRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/landlord': typeof AuthenticatedLandlordRoute
   '/messages': typeof AuthenticatedMessagesRoute
   '/properties/$propertyId': typeof PropertiesPropertyIdRoute
+  '/admin/listings': typeof AuthenticatedAdminListingsRoute
+  '/admin/messages': typeof AuthenticatedAdminMessagesRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -101,12 +131,15 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/explore': typeof ExploreRoute
   '/how-it-works': typeof HowItWorksRoute
-  '/admin': typeof AuthenticatedAdminRouteRoute
   '/account': typeof AuthenticatedAccountRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/landlord': typeof AuthenticatedLandlordRoute
   '/messages': typeof AuthenticatedMessagesRoute
   '/properties/$propertyId': typeof PropertiesPropertyIdRoute
+  '/admin/listings': typeof AuthenticatedAdminListingsRoute
+  '/admin/messages': typeof AuthenticatedAdminMessagesRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -116,12 +149,16 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/explore': typeof ExploreRoute
   '/how-it-works': typeof HowItWorksRoute
-  '/_authenticated/admin': typeof AuthenticatedAdminRouteRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/landlord': typeof AuthenticatedLandlordRoute
   '/_authenticated/messages': typeof AuthenticatedMessagesRoute
   '/properties/$propertyId': typeof PropertiesPropertyIdRoute
+  '/_authenticated/admin/listings': typeof AuthenticatedAdminListingsRoute
+  '/_authenticated/admin/messages': typeof AuthenticatedAdminMessagesRoute
+  '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -137,6 +174,10 @@ export interface FileRouteTypes {
     | '/landlord'
     | '/messages'
     | '/properties/$propertyId'
+    | '/admin/listings'
+    | '/admin/messages'
+    | '/admin/users'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -144,12 +185,15 @@ export interface FileRouteTypes {
     | '/auth'
     | '/explore'
     | '/how-it-works'
-    | '/admin'
     | '/account'
     | '/dashboard'
     | '/landlord'
     | '/messages'
     | '/properties/$propertyId'
+    | '/admin/listings'
+    | '/admin/messages'
+    | '/admin/users'
+    | '/admin'
   id:
     | '__root__'
     | '/'
@@ -164,6 +208,10 @@ export interface FileRouteTypes {
     | '/_authenticated/landlord'
     | '/_authenticated/messages'
     | '/properties/$propertyId'
+    | '/_authenticated/admin/listings'
+    | '/_authenticated/admin/messages'
+    | '/_authenticated/admin/users'
+    | '/_authenticated/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -262,11 +310,59 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PropertiesPropertyIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/listings': {
+      id: '/_authenticated/admin/listings'
+      path: '/listings'
+      fullPath: '/admin/listings'
+      preLoaderRoute: typeof AuthenticatedAdminListingsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/messages': {
+      id: '/_authenticated/admin/messages'
+      path: '/messages'
+      fullPath: '/admin/messages'
+      preLoaderRoute: typeof AuthenticatedAdminMessagesRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/users': {
+      id: '/_authenticated/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
   }
 }
 
+interface AuthenticatedAdminRouteRouteChildren {
+  AuthenticatedAdminListingsRoute: typeof AuthenticatedAdminListingsRoute
+  AuthenticatedAdminMessagesRoute: typeof AuthenticatedAdminMessagesRoute
+  AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+}
+
+const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
+  {
+    AuthenticatedAdminListingsRoute: AuthenticatedAdminListingsRoute,
+    AuthenticatedAdminMessagesRoute: AuthenticatedAdminMessagesRoute,
+    AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
+    AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  }
+
+const AuthenticatedAdminRouteRouteWithChildren =
+  AuthenticatedAdminRouteRoute._addFileChildren(
+    AuthenticatedAdminRouteRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRoute
+  AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
   AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedLandlordRoute: typeof AuthenticatedLandlordRoute
@@ -274,7 +370,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRoute,
+  AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
   AuthenticatedAccountRoute: AuthenticatedAccountRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedLandlordRoute: AuthenticatedLandlordRoute,
