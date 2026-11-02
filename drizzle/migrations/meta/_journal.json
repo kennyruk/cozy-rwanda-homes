@@ -15,6 +15,13 @@
       "when": 1792847281113,
       "tag": "0001_tenant_landlord_accounts",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793603087951,
+      "tag": "0002_admin_accounts",
+      "breakpoints": true
     }
   ]
 }
