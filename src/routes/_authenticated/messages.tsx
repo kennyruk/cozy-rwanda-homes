@@ -25,10 +25,12 @@ export const Route = createFileRoute("/_authenticated/messages")({
   component: MessagesPage,
 });
 
-async function fetchConversations() {
+async function fetchConversations(uid: string) {
+  // Only the signed-in person's own chats (admins can read every chat, but those live in the admin area).
   const { data, error } = await supabase
     .from("conversations")
     .select("id, tenant_id, landlord_id, last_message_at, property:properties(id, title, price, district, neighbourhood), tenant:profiles!conversations_tenant_id_fkey(full_name), landlord:profiles!conversations_landlord_id_fkey(full_name)")
+    .or(`tenant_id.eq.${uid},landlord_id.eq.${uid}`)
     .order("last_message_at", { ascending: false });
   if (error) throw error;
   return data ?? [];
@@ -53,7 +55,7 @@ function MessagesPage() {
   const navigate = useNavigate({ from: "/messages" });
   const qc = useQueryClient();
   const uid = user?.id;
-  const convs = useQuery({ queryKey: ["conversations", uid], queryFn: fetchConversations, enabled: !!uid });
+  const convs = useQuery({ queryKey: ["conversations", uid], queryFn: () => fetchConversations(uid ?? ""), enabled: !!uid });
   const msgs = useQuery({ queryKey: ["messages", c], queryFn: () => fetchMessages(c ?? ""), enabled: !!c && !!uid });
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);

@@ -40,7 +40,7 @@ const COPY = {
 
 function AuthPage() {
   const search = Route.useSearch();
-  const { user, role, loading } = useAuth();
+  const { user, role, isAdmin, loading } = useAuth();
   const navigate = useNavigate();
   const [type, setType] = useState<AccountType>(search.as ?? (/^\/(landlord|dashboard)/.test(search.redirect ?? "") ? "landlord" : "tenant"));
   const [mode, setMode] = useState<"signin" | "signup">("signin");
@@ -51,11 +51,11 @@ function AuthPage() {
   const [sent, setSent] = useState(false);
 
   useEffect(() => {
-    if (loading || !user || !role) return;
+    if (loading || !user || (!role && !isAdmin)) return;
     const stored = sessionStorage.getItem(STORE_KEY);
     sessionStorage.removeItem(STORE_KEY);
-    navigate({ to: safeRedirect(search.redirect ?? stored ?? homeFor(role)), replace: true });
-  }, [user, role, loading, search.redirect, navigate]);
+    navigate({ to: safeRedirect(search.redirect ?? stored ?? homeFor(role, isAdmin)), replace: true });
+  }, [user, role, isAdmin, loading, search.redirect, navigate]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
