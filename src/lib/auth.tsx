@@ -9,21 +9,28 @@ type AuthState = {
   user: User | null;
   /** null = signed in but hasn't picked tenant or landlord yet */
   role: AccountType | null;
+  /** Site admin (sees and manages everything). Cosmetic in the UI; the database enforces it. */
+  isAdmin: boolean;
   loading: boolean;
   chooseRole: (role: AccountType) => Promise<void>;
 };
 
-const AuthContext = createContext<AuthState>({ session: null, user: null, role: null, loading: true, chooseRole: async () => {} });
+const AuthContext = createContext<AuthState>({ session: null, user: null, role: null, isAdmin: false, loading: true, chooseRole: async () => {} });
 
 async function loadRole(userId: string): Promise<AccountType | null> {
   const { data } = await supabase.from("user_roles").select("role").eq("user_id", userId).maybeSingle();
   return data?.role ?? null;
 }
 
+async function loadIsAdmin(userId: string): Promise<boolean> {
+  const { data } = await supabase.from("admins").select("user_id").eq("user_id", userId).maybeSingle();
+  return !!data;
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [ready, setReady] = useState(false);
-  const [roleState, setRoleState] = useState<{ uid: string; role: AccountType | null } | null>(null);
+  const [roleState, setRoleState] = useState<{ uid: string; role: AccountType | null; isAdmin: boolean } | null>(null);
   const uid = session?.user.id ?? null;
 
   useEffect(() => {
@@ -35,7 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!uid) return;
     let alive = true;
-    loadRole(uid).then((role) => { if (alive) setRoleState({ uid, role }); });
+    Promise.all([loadRole(uid), loadIsAdmin(uid)]).then(([role, isAdmin]) => { if (alive) setRoleState({ uid, role, isAdmin }); });
     return () => { alive = false; };
   }, [uid]);
 
@@ -45,10 +52,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) {
       const existing = await loadRole(uid);
       if (!existing) throw error;
-      setRoleState({ uid, role: existing });
+      setRoleState((prev) => ({ uid, role: existing, isAdmin: prev?.uid === uid ? prev.isAdmin : false }));
       return;
     }
-    setRoleState({ uid, role: r });
+    setRoleState((prev) => ({ uid, role: r, isAdmin: prev?.uid === uid ? prev.isAdmin : false }));
   }, [uid]);
 
   const roleKnown = !!uid && roleState?.uid === uid;
@@ -56,6 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     session,
     user: session?.user ?? null,
     role: roleKnown && roleState ? roleState.role : null,
+    isAdmin: roleKnown && roleState ? roleState.isAdmin : false,
     loading: !ready || (!!uid && !roleKnown),
     chooseRole,
   };
@@ -70,4 +78,4 @@ export function safeRedirect(value: unknown): string {
 }
 
 /** Where to send someone after they sign in, when no specific page was requested. */
-export const homeFor = (role: AccountType | null) => (role === "landlord" ? "/dashboard" : "/explore");
+export const homeFor = (role: AccountType | null, isAdmin = false) => (isAdmin ? "/admin" : role === "landlord" ? "/dashboard" : "/explore");
