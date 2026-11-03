@@ -62,6 +62,19 @@ export async function fetchListings(f: ListingFilters = {}): Promise<Listing[]> 
   return withImages(data ?? []);
 }
 
+/** How many live homes there are per property type and per district. */
+export async function fetchListingCounts() {
+  const { data, error } = await supabase.from("properties").select("property_type, district").eq("available", true);
+  if (error) throw error;
+  const byType: Record<string, number> = {};
+  const byDistrict: Record<string, number> = {};
+  (data ?? []).forEach((r) => {
+    byType[r.property_type] = (byType[r.property_type] ?? 0) + 1;
+    byDistrict[r.district] = (byDistrict[r.district] ?? 0) + 1;
+  });
+  return { byType, byDistrict };
+}
+
 export async function fetchListing(id: string): Promise<Listing | null> {
   const { data, error } = await supabase.from("properties").select(SELECT).eq("id", id).maybeSingle();
   if (error) throw error;
