@@ -45,7 +45,7 @@ function UsersPage() {
   const fail = (e: unknown) => toast.error(e instanceof Error && e.message !== "Forbidden" ? e.message : "That didn't work. Please try again.");
 
   const roleM = useMutation({ mutationFn: (v: { userId: string; role: "tenant" | "landlord" }) => setRole({ data: v }), onSuccess: () => { toast.success("Account type changed"); refresh(); }, onError: fail });
-  const suspendM = useMutation({ mutationFn: (v: { userId: string; suspended: boolean }) => setSuspended({ data: v }), onSuccess: (_d, v) => { toast.success(v.suspended ? "Account suspended — they can't sign in and their homes are hidden" : "Account restored"); refresh(); }, onError: fail });
+  const suspendM = useMutation({ mutationFn: (v: { userId: string; suspended: boolean }) => setSuspended({ data: v }), onSuccess: (_d, v) => { toast.success(v.suspended ? "Account suspended — they can't sign in and their homes are hidden" : "Account restored. Their homes stay hidden until you or they show them again."); refresh(); }, onError: fail });
   const deleteM = useMutation({ mutationFn: (userId: string) => deleteUser({ data: { userId } }), onSuccess: () => { toast.success("Account deleted"); refresh(); }, onError: fail });
 
   const all = users.data ?? [];
