@@ -110,7 +110,8 @@ function Home() {
         </div>
       </section>
 
-      <section className="section section-band">
+      <div className="band">
+      <section className="section">
         <div className="section-heading">
           <div><p className="eyebrow">Newly listed</p><h2>Latest homes on Smart Rent</h2></div>
           <Link to="/explore" className="text-link">See all homes <ArrowRight size={16} /></Link>
@@ -119,6 +120,7 @@ function Home() {
           : latest.data && latest.data.length === 0 ? <EmptyState title="No homes listed yet" copy="Be the first landlord to list a property — it's free." action={<Link to="/auth" search={{ as: "landlord", redirect: "/landlord" }} className="button button-primary">List a property</Link>} />
           : <div className="property-grid">{latest.data ? latest.data.map((l) => <PropertyCard listing={l} key={l.id} />) : <CardSkeletons />}</div>}
       </section>
+      </div>
 
       <section className="section areas">
         <div className="areas-intro">
@@ -148,8 +150,8 @@ function Home() {
           {BUDGETS.map((b, i) => (
             <Link key={b} to="/explore" search={{ maxPrice: b }} className="budget-card">
               <small>{i === 0 ? "Starter" : i === 1 ? "Comfortable" : i === 2 ? "Family" : "Premium"}</small>
-              <strong>Up to {formatPrice(b)}</strong>
-              <span>RWF / month <ArrowRight size={14} /></span>
+              <strong>{formatPrice(b)}</strong>
+              <span>RWF / month or less <ArrowRight size={14} /></span>
             </Link>
           ))}
         </div>
