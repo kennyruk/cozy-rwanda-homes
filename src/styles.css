@@ -540,16 +540,18 @@ h1, h2, h3 { letter-spacing: -0.01em; font-weight: 800; }
 .admin-entry { border-color: var(--foreground); }
 
 @media (max-width: 1100px) { .adm-stats { grid-template-columns: repeat(3, 1fr); } .adm-stat:nth-child(3) { border-right: 0; } .adm-stat:nth-child(-n+3) { border-bottom: 1px solid var(--adm-line); } }
+.adm-panel { min-width: 0; }
 @media (max-width: 860px) {
-  .adm { grid-template-columns: 1fr; }
-  .adm-side { position: sticky; top: 0; z-index: 20; height: auto; flex-direction: row; align-items: center; padding: 8px 10px; gap: 8px; overflow-x: auto; }
-  .adm-mark { border: 0; padding: 0 6px 0 0; margin: 0; }
+  .adm { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1fr; align-content: start; }
+  .adm-side { position: sticky; top: 0; z-index: 20; height: auto; flex-direction: row; align-items: center; padding: 8px 10px; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+  .adm-mark { border: 0; padding: 0 6px 0 0; margin: 0; flex: none; }
+  .adm-mark strong { white-space: nowrap; }
   .adm-mark small, .adm-nav-label, .adm-who { display: none; }
-  .adm-nav, .adm-side-foot { flex-direction: row; border: 0; padding: 0; margin: 0; }
+  .adm-nav, .adm-side-foot { flex-direction: row; border: 0; padding: 0; margin: 0; flex: none; }
   .adm-nav-item { white-space: nowrap; width: auto; }
   .adm-nav-item.active { box-shadow: inset 0 -2px 0 var(--secondary); }
   .adm-main { padding: 18px 14px 40px; }
-  .adm-grid { grid-template-columns: 1fr; }
+  .adm-grid { grid-template-columns: minmax(0, 1fr); }
   .adm-search { min-width: 0; flex: 1; }
   .adm-inbox { grid-template-columns: 1fr; height: calc(100vh - 170px); }
   .adm-inbox.has-active .adm-inbox-list { display: none; }
