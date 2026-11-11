@@ -10,6 +10,7 @@
 <!-- LOVABLE:END -->
 
 ## Project rules
+- Keep the reference-style landing page layout and its visual tokens isolated in its own stylesheet so marketplace and admin pages retain their existing presentation.
 - Signed-in pages (dashboard, landlord listing form, messages) live under `src/routes/_authenticated/`; never add `_authenticated/index.tsx` because `src/routes/index.tsx` owns `/` and a childless or index-claiming pathless layout breaks the route tree.
 - Listings, conversations and messages are read/written from the browser Supabase client and protected by RLS; listing photos live in the private `property-images` bucket under `<owner_id>/` and are shown via signed URLs.
 - No demo/sample data in code or migrations — the marketplace shows only real user listings.

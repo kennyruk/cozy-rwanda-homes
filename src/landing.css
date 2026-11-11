@@ -1,0 +1,102 @@
+/* Landing-only tokens and styles keep the marketplace and admin console unchanged. */
+.villa-landing {
+  --villa-ink: oklch(.27 .075 255);
+  --villa-light: oklch(.99 0 0);
+  --villa-copy: oklch(.31 .02 255);
+  --villa-muted: oklch(.64 .022 255);
+  --villa-line: oklch(.92 .012 255);
+  --villa-overlay: oklch(.18 .015 250 / .2);
+  --villa-caption: oklch(.17 .012 250 / .75);
+  --villa-clear-line: oklch(.99 0 0 / .4);
+  position: relative; isolation: isolate; height: 100svh; min-height: 660px; overflow: hidden;
+  color: var(--villa-light); background: var(--villa-ink); font-family: "Roboto", "Manrope", sans-serif;
+}
+.villa-backdrop, .villa-shade { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -2; }
+.villa-backdrop { object-fit: cover; object-position: center; }
+.villa-shade { z-index: -1; background: var(--villa-overlay); }
+.villa-header { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 17px 2.6%; }
+.villa-brand { flex-shrink: 0; }
+.villa-brand .brand img { width: 140px; height: auto; filter: brightness(0) invert(1); }
+.villa-nav { display: flex; align-items: center; gap: 38px; margin-left: 5%; font-size: 12px; font-weight: 300; }
+.villa-nav a { position: relative; padding: 10px 0; }
+.villa-nav a::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: var(--villa-light); transform: scaleX(0); transition: transform .2s; }
+.villa-nav a.selected::after, .villa-nav a:hover::after { transform: scaleX(1); }
+.villa-actions { display: flex; align-items: center; gap: 8px; }
+.villa-list { border: 1px solid var(--villa-clear-line); border-radius: 24px; height: 28px; padding: 0 12px; font-size: 11px; font-weight: 300; color: var(--villa-light); }
+.villa-list svg { width: 12px; height: 12px; }
+.villa-account { width: 28px; height: 28px; border-radius: 50%; color: var(--villa-light); background: var(--villa-caption); border: 1px solid var(--villa-clear-line); }
+.villa-list:hover, .villa-account:hover { background: var(--villa-caption); color: var(--villa-light); }
+.villa-title { position: absolute; top: 22%; left: 2.6%; right: 1.4%; }
+.villa-eyebrow { font-size: 14px; font-weight: 300; margin: 0 0 23px 10px; }
+.villa-title h1 { margin: 0; font-weight: 100; font-size: 156px; line-height: .76; letter-spacing: 0; }
+.villa-title h1 span { display: block; }
+.villa-rent { text-align: right; margin-top: 5px; }
+.villa-previews { position: absolute; top: 59.4%; left: 3.7%; display: flex; gap: 12px; }
+.villa-preview { width: 137px; height: 115px; position: relative; overflow: hidden; border-radius: 6px; background: var(--villa-caption); }
+.villa-preview:nth-child(2) { width: 156px; }
+.villa-preview img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s; }
+.villa-preview:hover img { transform: scale(1.06); }
+.villa-preview-caption { position: absolute; bottom: 0; left: 0; right: 0; padding: 5px 9px 7px; background: var(--villa-caption); font-size: 12px; }
+.villa-preview-caption strong { font-weight: 400; display: block; }
+.villa-preview-caption > span { display: flex; align-items: center; gap: 3px; font-size: 11px; margin-top: 2px; }
+.villa-preview-caption svg { width: 11px; height: 11px; fill: var(--villa-light); color: var(--villa-caption); }
+.villa-search { position: absolute; bottom: 5%; left: 4.1%; right: 4.1%; display: grid; grid-template-columns: 1.15fr 1fr 1.04fr 142px; align-items: center; background: var(--villa-light); color: var(--villa-copy); border-radius: 8px; padding: 13px 10px 10px 19px; min-height: 69px; }
+.villa-search label { min-width: 0; border-right: 1px solid var(--villa-line); padding: 0 17px; }
+.villa-search label:first-child { padding-left: 0; }
+.villa-search label > span { display: block; font-size: 11px; font-weight: 500; margin-bottom: 7px; }
+.villa-search label > div { display: flex; align-items: center; position: relative; }
+.villa-search input, .villa-search select { appearance: none; border: 0; outline: none; width: 100%; min-width: 0; padding: 0 20px 0 0; background: transparent; color: var(--villa-muted); font-size: 12px; height: 19px; }
+.villa-search input::placeholder { color: var(--villa-muted); opacity: 1; }
+.villa-search label:focus-within > span { color: var(--villa-ink); }
+.villa-search label svg { position: absolute; right: 0; width: 13px; height: 13px; color: var(--villa-muted); pointer-events: none; }
+.villa-search-submit { background: var(--villa-ink); color: var(--villa-light); height: 44px; margin-left: 12px; padding: 0 13px; font-size: 11px; font-weight: 400; box-shadow: none; }
+.villa-search-submit:hover { background: var(--villa-copy); }
+.villa-search-submit svg { width: 18px; height: 18px; }
+.villa-role-chooser { position: absolute; z-index: 5; inset: 80px 16px auto; background: var(--villa-light); color: var(--villa-copy); max-width: 660px; margin: auto; border-radius: 8px; }
+@media (min-width: 1200px) {
+  .villa-title h1 { font-size: 200px; }
+  .villa-header { padding-top: 24px; }
+  .villa-brand .brand img { width: 180px; }
+  .villa-nav { font-size: 14px; gap: 48px; }
+  .villa-eyebrow { font-size: 17px; }
+  .villa-previews { gap: 16px; }
+  .villa-preview { width: 178px; height: 148px; }
+  .villa-preview:nth-child(2) { width: 200px; }
+  .villa-preview-caption { font-size: 14px; }
+  .villa-preview-caption > span { font-size: 12px; }
+  .villa-search { grid-template-columns: 1.15fr 1fr 1.04fr 185px; min-height: 90px; padding: 15px 14px 15px 25px; }
+  .villa-search label > span { font-size: 13px; }
+  .villa-search input, .villa-search select { font-size: 14px; }
+  .villa-search-submit { height: 56px; font-size: 13px; }
+}
+@media (min-width: 1600px) { .villa-title h1 { font-size: 250px; } }
+@media (max-width: 900px) {
+  .villa-landing { min-height: 600px; }
+  .villa-nav { gap: 27px; margin-left: 0; }
+  .villa-title h1 { font-size: 140px; }
+  .villa-title { top: 22%; }
+  .villa-previews { top: 61%; }
+}
+@media (max-width: 640px) {
+  .villa-landing { min-height: 740px; }
+  .villa-backdrop { object-position: 57% center; }
+  .villa-header { flex-wrap: wrap; gap: 12px; padding: 20px; }
+  .villa-brand .brand img { width: 132px; }
+  .villa-actions { margin-left: auto; }
+  .villa-nav { order: 3; width: 100%; justify-content: space-between; gap: 12px; font-size: 12px; }
+  .villa-title { top: 24%; left: 5%; right: 4%; }
+  .villa-eyebrow { font-size: 12px; margin: 0 0 24px; }
+  .villa-title h1 { font-size: 90px; line-height: .9; }
+  .villa-rent { margin-top: 10px; }
+  .villa-previews { top: 56%; left: 5%; }
+  .villa-preview { width: 124px; height: 100px; }
+  .villa-preview:nth-child(2) { width: 138px; }
+  .villa-preview-caption { font-size: 11px; }
+  .villa-search { left: 5%; right: 5%; bottom: 4%; grid-template-columns: 1fr 1fr; gap: 14px 0; padding: 16px; }
+  .villa-search .villa-location { grid-column: 1 / -1; padding: 0 0 11px; border-right: 0; border-bottom: 1px solid var(--villa-line); }
+  .villa-search label { padding: 0 12px 0 0; }
+  .villa-search label:nth-of-type(3) { padding: 0 0 0 12px; border-right: 0; }
+  .villa-search-submit { grid-column: 1 / -1; margin: 0; width: 100%; }
+}
+@media (max-width: 360px) { .villa-title h1 { font-size: 78px; } .villa-list { padding: 0 8px; font-size: 10px; } }
+@media (prefers-reduced-motion: reduce) { .villa-preview img, .villa-nav a::after { transition: none; } }

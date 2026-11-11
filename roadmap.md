@@ -8,4 +8,4 @@
 - [x] Fix rent box so prices above 500,000 RWF work
 - [x] Separate tenant and landlord accounts; only landlords list, only tenants message
 - [ ] Finish admin: verify every admin page loads and its actions work; fix phone layout
-- [ ] Landing page: new hero and more sections (browse by type, areas, budgets, tenants vs landlords, safety tips, FAQ)
+- [x] Landing page: replace the previous sections with the supplied villa reference design; retain working navigation and rental search
