@@ -1,7 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ChevronDown, MapPin, Plus, Search, UserRound } from "lucide-react";
 import { useState } from "react";
-import landingCss from "../landing.css?url";
 import villa from "../assets/luxury-villa-scene.jpg";
 import apartment from "../assets/modern-apartment-view.jpg.asset.json";
 import luxuryVilla from "../assets/luxury-villa-view.jpg.asset.json";
@@ -21,10 +20,6 @@ export const Route = createFileRoute("/")({
       { property: "og:description", content: "Your next home starts here. Explore rental homes across Rwanda and message landlords directly." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-    ],
-    links: [
-      { rel: "stylesheet", href: landingCss },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500&display=swap" },
     ],
   }),
   component: Home,

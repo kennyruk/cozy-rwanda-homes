@@ -4,13 +4,15 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
+import landingCss from "../landing.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "../lib/auth";
 import { Toaster } from "../components/ui/sonner";
@@ -95,7 +97,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" },
+      { rel: "stylesheet", href: landingCss },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700&display=swap" },
       { rel: "icon", href: "/favicon.png", type: "image/png" },
     ],
   }),
@@ -119,6 +122,22 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+/** Thin top bar that runs while a page is loading. Animates transform/opacity only, so it stays smooth. */
+function RouteProgress() {
+  const pending = useRouterState({ select: (s) => s.isLoading || s.status === "pending" });
+  const [phase, setPhase] = useState<"idle" | "run" | "done">("idle");
+  useEffect(() => {
+    if (pending) {
+      setPhase("run");
+      return;
+    }
+    setPhase((p) => (p === "run" ? "done" : p));
+    const t = setTimeout(() => setPhase("idle"), 500);
+    return () => clearTimeout(t);
+  }, [pending]);
+  return <div className="route-progress" data-phase={phase} aria-hidden="true" />;
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
@@ -126,6 +145,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <AuthProvider>
+        <RouteProgress />
         <Outlet />
         <Toaster position="top-center" />
       </AuthProvider>

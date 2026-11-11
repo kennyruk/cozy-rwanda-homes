@@ -3,9 +3,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Home, Info, LayoutGrid, MessageCircle, Plus, Search, ShieldCheck, UserRound } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
+import { Button } from "../ui/button";
 import { RoleChooser } from "./account";
 import { Brand } from "./brand";
 
+/** Same header as the landing page, on a solid ink bar so every page shares one look. */
 export function SiteHeader() {
   const { user, role, isAdmin, loading } = useAuth();
   const navigate = useNavigate();
@@ -17,25 +19,27 @@ export function SiteHeader() {
     await supabase.auth.signOut();
     navigate({ to: "/auth", replace: true });
   }
+  const accountTo = user ? (isAdmin ? "/admin" : "/account") : "/auth";
+  const accountLabel = user ? (isAdmin ? "Admin dashboard" : "My account") : "Sign in";
   return (
     <header className="site-header">
-      <div className="nav-shell">
-        <Link to="/" className="logo-link"><Brand /></Link>
-        <nav className="main-nav">
-          <Link to="/" activeOptions={{ exact: true }} activeProps={{ className: "active" }}>Home</Link>
-          <Link to="/explore" activeProps={{ className: "active" }}>Explore</Link>
-          <Link to="/how-it-works" className="nav-secondary" activeProps={{ className: "nav-secondary active" }}>How it works</Link>
-          <Link to="/about" className="nav-secondary" activeProps={{ className: "nav-secondary active" }}>About us</Link>
-          {user && role && <Link to="/messages" activeProps={{ className: "active" }}>Messages</Link>}
-          {isLandlord && <Link to="/dashboard" activeProps={{ className: "active" }}>My listings</Link>}
+      <div className="villa-header">
+        <Link to="/" className="villa-brand" aria-label="Smart Rent home"><Brand light /></Link>
+        <nav className="villa-nav" aria-label="Main navigation">
+          <Link to="/" activeOptions={{ exact: true }} activeProps={{ className: "selected" }}>Home</Link>
+          <Link to="/explore" activeProps={{ className: "selected" }}>Explore</Link>
+          <Link to="/how-it-works" className="nav-secondary" activeProps={{ className: "nav-secondary selected" }}>How it works</Link>
+          <Link to="/about" className="nav-secondary" activeProps={{ className: "nav-secondary selected" }}>About us</Link>
+          {user && role && <Link to="/messages" activeProps={{ className: "selected" }}>Messages</Link>}
+          {isLandlord && <Link to="/dashboard" activeProps={{ className: "selected" }}>My listings</Link>}
         </nav>
-        <div className="nav-actions">
-          {!loading && !user && <Link to="/auth" search={{ as: "landlord", redirect: "/landlord" }} className="button button-ghost button-small"><Plus size={16} />List a property</Link>}
-          {isLandlord && <Link to="/landlord" className="button button-ghost button-small"><Plus size={16} />List a property</Link>}
-          {isAdmin && <Link to="/admin" className="button button-ghost button-small admin-entry"><ShieldCheck size={16} />Admin</Link>}
-          {!loading && (user
-            ? <>{role && <Link to="/account" className="account-badge account-link" title="My account"><UserRound size={14} />{role === "landlord" ? "Landlord" : "Tenant"}</Link>}<button className="button button-quiet button-small" onClick={signOut}>Sign out</button></>
-            : <Link to="/auth" className="button button-primary button-small">Sign in</Link>)}
+        <div className="villa-actions">
+          {!loading && !user && <Button asChild variant="ghost" className="villa-list"><Link to="/auth" search={{ as: "landlord", redirect: "/landlord" }}><Plus />List a property</Link></Button>}
+          {isLandlord && <Button asChild variant="ghost" className="villa-list"><Link to="/landlord"><Plus />List a property</Link></Button>}
+          {!loading && user && <Button variant="ghost" className="villa-list" onClick={signOut}>Sign out</Button>}
+          <Button asChild variant="ghost" size="icon" className="villa-account">
+            <Link to={accountTo} aria-label={accountLabel} title={user && role ? `${accountLabel} (${role})` : accountLabel}><UserRound /></Link>
+          </Button>
         </div>
       </div>
     </header>
@@ -62,18 +66,20 @@ export function MobileNav() {
   );
 }
 
+/** Same footer as the landing page. */
 export function SiteFooter() {
   return (
-    <footer className="site-footer">
-      <div className="footer-inner">
-        <div><Brand /><p>Connecting landlords and tenants across Rwanda.</p></div>
-        <div className="footer-links">
-          <Link to="/explore">Explore homes</Link>
+    <footer className="estate-footer">
+      <div className="estate-container">
+        <Link to="/" aria-label="Smart Rent home"><Brand light /></Link>
+        <p>Connecting landlords and tenants across Rwanda.</p>
+        <nav aria-label="Footer navigation">
+          <Link to="/explore">Explore</Link>
           <Link to="/how-it-works">How it works</Link>
           <Link to="/about">About us</Link>
           <Link to="/auth" search={{ as: "landlord", redirect: "/landlord" }}>For landlords</Link>
-          <span>© {new Date().getFullYear()} Smart Rent</span>
-        </div>
+        </nav>
+        <small>© {new Date().getFullYear()} Smart Rent</small>
       </div>
     </footer>
   );

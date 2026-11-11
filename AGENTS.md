@@ -10,7 +10,8 @@
 <!-- LOVABLE:END -->
 
 ## Project rules
-- Keep the reference-style landing page and its section module styled through the landing-only stylesheet and scoped tokens so marketplace and admin pages retain their existing presentation.
+- The landing page look is the look of the whole site. Shared tokens (Roboto, ink blue, accent green, 4px radii, light weights) live in `:root` in `src/styles.css`; `src/landing.css` is loaded globally from `src/routes/__root.tsx`, and every page uses the shared header/footer in `src/components/smart-rent/layout.tsx` (built from the landing's `.villa-*` / `.estate-*` classes). Do not add a page-specific stylesheet or a second font stack that makes a page look different from the landing page.
+- Motion: animate only `opacity`, `transform` and the individual `translate`/`scale` properties (compositor-only, smooth at 120Hz). Never animate `width`, `height`, `top`, `left`, `background-position` or box-shadow. Keep the `prefers-reduced-motion` block at the end of `src/styles.css`.
 - Signed-in pages (dashboard, landlord listing form, messages) live under `src/routes/_authenticated/`; never add `_authenticated/index.tsx` because `src/routes/index.tsx` owns `/` and a childless or index-claiming pathless layout breaks the route tree.
 - Listings, conversations and messages are read/written from the browser Supabase client and protected by RLS; listing photos live in the private `property-images` bucket under `<owner_id>/` and are shown via signed URLs.
 - No demo/sample data in code or migrations — the marketplace shows only real user listings.
