@@ -84,6 +84,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Smart Rent" },
       { name: "description", content: "A modern rental marketplace built for Rwanda." },
+      { name: "google-site-verification", content: "J9zJULuXnVXz6dgxB-gtHJgBc3WEU8Bif2Artf_4JnY" },
       { name: "author", content: "Smart Rent" },
       { property: "og:title", content: "Smart Rent" },
       { property: "og:description", content: "Find a place. Feel at home." },
