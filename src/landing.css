@@ -1,5 +1,5 @@
 /* Landing-only tokens and styles keep the marketplace and admin console unchanged. */
-.villa-landing {
+.villa-home {
   --villa-ink: oklch(.27 .075 255);
   --villa-light: oklch(.99 0 0);
   --villa-copy: oklch(.31 .02 255);
@@ -8,7 +8,14 @@
   --villa-overlay: oklch(.18 .015 250 / .2);
   --villa-caption: oklch(.17 .012 250 / .75);
   --villa-clear-line: oklch(.99 0 0 / .4);
-  position: relative; isolation: isolate; height: 100svh; min-height: 660px; overflow: hidden;
+  --estate-background: oklch(.98 .004 90);
+  --estate-surface: oklch(.955 .005 90);
+  --estate-accent: oklch(.55 .085 165);
+  --estate-shadow: 0 20px 60px oklch(.15 .02 255 / .2);
+  background: var(--estate-background); font-family: "Roboto", "Manrope", sans-serif;
+}
+.villa-landing {
+  position: relative; isolation: isolate; height: min(860px, calc(100svh - 46px)); min-height: 660px; overflow: hidden;
   color: var(--villa-light); background: var(--villa-ink); font-family: "Roboto", "Manrope", sans-serif;
 }
 .villa-backdrop, .villa-shade { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -2; }
@@ -100,3 +107,148 @@
 }
 @media (max-width: 360px) { .villa-title h1 { font-size: 78px; } .villa-list { padding: 0 8px; font-size: 10px; } }
 @media (prefers-reduced-motion: reduce) { .villa-preview img, .villa-nav a::after { transition: none; } }
+
+/* One centered content line carries through the photograph and every section. */
+.villa-header { max-width: 1280px; margin-inline: auto; padding-inline: 48px; }
+.villa-title { left: max(7%, calc((100% - 1184px) / 2)); right: max(7%, calc((100% - 1184px) / 2)); top: 23%; }
+.villa-previews { left: max(7%, calc((100% - 1184px) / 2)); top: auto; bottom: 24%; }
+.villa-search { left: 50%; right: auto; transform: translateX(-50%); width: calc(100% - 112px); max-width: 1120px; bottom: 6%; padding: 22px 24px 22px 30px; min-height: 94px; box-shadow: var(--estate-shadow); }
+.villa-search label { padding-inline: 24px; }
+.villa-search-submit { margin-left: 20px; height: 50px; }
+.estate-sections { color: var(--villa-copy); font-weight: 300; }
+.estate-container { max-width: 1280px; margin-inline: auto; padding-inline: 48px; }
+.estate-section { padding-top: 88px; padding-bottom: 88px; }
+.estate-values { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; padding-block: 30px; border-bottom: 1px solid var(--villa-line); }
+.estate-values span { display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 13px; }
+.estate-values svg { width: 18px; height: 18px; color: var(--estate-accent); }
+.estate-heading { display: flex; align-items: end; justify-content: space-between; gap: 32px; margin-bottom: 36px; }
+.estate-kicker { font-size: 12px; margin: 0 0 20px; color: var(--villa-muted); }
+.estate-sections h2 { font-size: 42px; line-height: 1.15; font-weight: 300; letter-spacing: 0; margin: 0; }
+.estate-link { display: inline-flex; align-items: center; gap: 14px; font-size: 13px; padding-block: 8px; border-bottom: 1px solid var(--villa-line); }
+.estate-link svg { width: 17px; height: 17px; transition: transform .2s; }
+.estate-link:hover svg { transform: translateX(4px); }
+.estate-types { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; }
+.estate-type-image { position: relative; aspect-ratio: 4 / 5; overflow: hidden; border-radius: 4px; }
+.estate-type-image img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s; }
+.estate-type:hover img { transform: scale(1.035); }
+.estate-type-arrow { position: absolute; right: 16px; bottom: 16px; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; background: var(--villa-light); }
+.estate-type-arrow svg { width: 18px; height: 18px; }
+.estate-type-title { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 22px; }
+.estate-type h3 { margin: 0; font-weight: 400; font-size: 24px; letter-spacing: 0; }
+.estate-type-title > span { color: var(--villa-muted); font-size: 12px; }
+.estate-type p { font-size: 14px; line-height: 1.6; margin: 10px 0 0; color: var(--villa-muted); }
+.estate-latest { background: var(--estate-surface); }
+.estate-sections .property-card { border: 0; border-radius: 4px; background: var(--villa-light); }
+.estate-sections .property-photo { aspect-ratio: 4 / 3; }
+.estate-sections .property-body { padding: 24px; }
+.estate-sections .property-title { font-weight: 400; letter-spacing: 0; }
+.estate-sections .price strong { font-weight: 500; color: var(--villa-copy); }
+.estate-sections .empty-state { padding: 52px 24px; border: 1px solid var(--villa-line); background: transparent; border-radius: 4px; }
+.estate-sections .empty-state h2 { font-size: 30px; }
+.estate-sections .empty-state p { color: var(--villa-muted); margin-block: 18px 24px; line-height: 1.6; }
+.estate-areas { display: grid; grid-template-columns: 1fr 1.4fr; gap: 80px; }
+.estate-description { max-width: 360px; font-size: 15px; line-height: 1.8; color: var(--villa-muted); margin: 22px 0; }
+.estate-area-list { display: grid; grid-template-columns: 1fr 1fr; column-gap: 34px; }
+.estate-area-list a { display: flex; align-items: center; gap: 14px; border-bottom: 1px solid var(--villa-line); padding: 22px 0; }
+.estate-area-list a > div { flex: 1; }
+.estate-area-list small { font-size: 11px; color: var(--villa-muted); }
+.estate-area-list h3 { font-weight: 400; font-size: 21px; letter-spacing: 0; margin: 7px 0 0; }
+.estate-area-list a > span { font-size: 11px; color: var(--villa-muted); }
+.estate-area-list svg { width: 16px; height: 16px; }
+.estate-budget-band { background: var(--villa-copy); color: var(--villa-light); }
+.estate-budget-band .estate-kicker, .estate-budget-band .estate-description { color: var(--villa-clear-line); }
+.estate-budgets { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.estate-budgets a { padding: 26px 30px; border-left: 1px solid var(--villa-clear-line); }
+.estate-budgets a:first-child { padding-left: 0; border-left: 0; }
+.estate-budgets small { display: block; font-size: 12px; }
+.estate-budgets strong { display: block; font-size: 32px; font-weight: 300; margin-block: 20px 14px; }
+.estate-budgets a > span { display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
+.estate-budgets svg { width: 18px; height: 18px; }
+.estate-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 44px; }
+.estate-steps > div { padding-top: 28px; border-top: 1px solid var(--villa-line); }
+.estate-steps > div > span { font-size: 14px; color: var(--estate-accent); }
+.estate-sections h3 { letter-spacing: 0; }
+.estate-steps h3 { font-weight: 400; font-size: 22px; margin: 30px 0 14px; }
+.estate-steps p, .estate-safety-items p { font-size: 14px; line-height: 1.8; color: var(--villa-muted); margin: 0; }
+.estate-audiences { background: var(--estate-surface); }
+.estate-audiences > div { display: grid; grid-template-columns: 1fr 1fr; }
+.estate-audiences > div > div { padding: 76px 64px 76px 0; }
+.estate-audiences > div > div + div { padding-left: 64px; padding-right: 0; border-left: 1px solid var(--villa-line); }
+.estate-audiences p:not(.estate-kicker) { max-width: 360px; font-size: 15px; line-height: 1.8; color: var(--villa-muted); margin-block: 24px 30px; }
+.estate-cta { height: 48px; padding-inline: 22px; border-radius: 4px; font-weight: 400; }
+.estate-safety { display: grid; grid-template-columns: 1fr 2fr; gap: 60px; }
+.estate-safety-items { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+.estate-safety-items svg { color: var(--estate-accent); width: 24px; height: 24px; }
+.estate-safety-items h3 { font-size: 17px; line-height: 1.4; font-weight: 400; margin-block: 22px 14px; }
+.estate-faq { display: grid; grid-template-columns: 1fr 1.4fr; gap: 80px; border-top: 1px solid var(--villa-line); }
+.estate-faq .estate-link { margin-top: 26px; }
+.estate-faq details { border-bottom: 1px solid var(--villa-line); }
+.estate-faq summary { font-size: 16px; font-weight: 400; list-style: none; cursor: pointer; padding: 24px 30px 24px 0; position: relative; }
+.estate-faq summary::-webkit-details-marker { display: none; }
+.estate-faq summary::after { content: "+"; position: absolute; right: 0; font-size: 22px; font-weight: 300; }
+.estate-faq details[open] summary::after { content: "−"; }
+.estate-faq details p { margin: 0 30px 24px 0; font-size: 14px; line-height: 1.8; color: var(--villa-muted); }
+.estate-footer { padding-block: 44px; background: var(--villa-copy); color: var(--villa-light); }
+.estate-footer > div { display: flex; align-items: center; flex-wrap: wrap; gap: 24px 32px; }
+.estate-footer .brand img { width: 145px; filter: brightness(0) invert(1); }
+.estate-footer p { font-size: 12px; flex: 1; }
+.estate-footer nav { display: flex; gap: 24px; font-size: 12px; }
+.estate-footer small { width: 100%; padding-top: 24px; border-top: 1px solid var(--villa-clear-line); font-size: 11px; }
+@media (max-width: 1000px) {
+  .villa-header { padding-inline: 32px; gap: 18px; }
+  .villa-nav { gap: 24px; }
+  .villa-title h1 { font-size: 130px; }
+  .villa-search { width: calc(100% - 96px); padding: 20px; grid-template-columns: 1.1fr 1fr 1fr 145px; }
+  .villa-search label { padding-inline: 16px; }
+  .villa-search-submit { margin-left: 14px; }
+  .estate-container { padding-inline: 40px; }
+  .estate-section { padding-block: 64px; }
+  .estate-sections h2 { font-size: 34px; }
+  .estate-areas, .estate-faq { gap: 40px; }
+  .estate-types { gap: 20px; }
+  .estate-budgets a { padding-inline: 20px; }
+  .estate-budgets strong { font-size: 26px; }
+  .estate-safety { grid-template-columns: 1fr; gap: 32px; }
+  .estate-audiences > div > div { padding: 56px 32px 56px 0; }
+  .estate-audiences > div > div + div { padding-left: 32px; }
+}
+@media (max-width: 640px) {
+  .villa-landing { height: 800px; min-height: 800px; }
+  .villa-header { padding: 20px 24px; }
+  .villa-title { top: 23%; left: 8%; right: 8%; }
+  .villa-title h1 { font-size: 84px; }
+  .villa-previews { left: 8%; bottom: 33%; }
+  .villa-search { width: calc(100% - 48px); max-width: 440px; bottom: 5%; padding: 22px; grid-template-columns: 1fr 1fr; }
+  .villa-search label { padding-inline: 0 12px; }
+  .villa-search-submit { margin: 0; height: 46px; }
+  .estate-container { padding-inline: 24px; }
+  .estate-section { padding-block: 52px; }
+  .estate-values { grid-template-columns: 1fr; gap: 18px; padding-block: 28px; }
+  .estate-values span { justify-content: flex-start; }
+  .estate-heading { align-items: flex-start; flex-direction: column; gap: 18px; margin-bottom: 28px; }
+  .estate-sections h2 { font-size: 32px; }
+  .estate-kicker { margin-bottom: 16px; font-size: 11px; }
+  .estate-types { grid-template-columns: 1fr; gap: 32px; }
+  .estate-type-image { aspect-ratio: 5 / 4; }
+  .estate-type-title { margin-top: 18px; }
+  .estate-areas, .estate-faq { grid-template-columns: 1fr; gap: 28px; }
+  .estate-area-list { column-gap: 22px; }
+  .estate-area-list a > span { display: none; }
+  .estate-area-list h3 { font-size: 18px; }
+  .estate-budgets { grid-template-columns: 1fr 1fr; row-gap: 24px; }
+  .estate-budgets a { padding: 14px 20px; }
+  .estate-budgets a:nth-child(3) { padding-left: 0; border-left: 0; }
+  .estate-budgets strong { font-size: 25px; }
+  .estate-steps { grid-template-columns: 1fr; gap: 28px; }
+  .estate-steps h3 { margin-top: 18px; }
+  .estate-audiences > div { grid-template-columns: 1fr; }
+  .estate-audiences > div > div, .estate-audiences > div > div + div { padding: 48px 0; border-left: 0; }
+  .estate-audiences > div > div + div { border-top: 1px solid var(--villa-line); }
+  .estate-safety-items { grid-template-columns: 1fr; gap: 28px; }
+  .estate-safety-items h3 { margin-top: 14px; }
+  .estate-footer > div { align-items: flex-start; flex-direction: column; gap: 20px; }
+  .estate-footer p { margin: 0; }
+  .estate-footer small { margin-top: 8px; }
+}
+@media (max-width: 360px) { .villa-title h1 { font-size: 72px; } .villa-preview { width: 112px; } .villa-preview:nth-child(2) { width: 125px; } }
+@media (prefers-reduced-motion: reduce) { .estate-type-image img, .estate-link svg { transition: none; } }

@@ -7,6 +7,7 @@ import apartment from "../assets/modern-apartment-view.jpg.asset.json";
 import luxuryVilla from "../assets/luxury-villa-view.jpg.asset.json";
 import { Brand } from "../components/smart-rent/brand";
 import { RoleChooser } from "../components/smart-rent/account";
+import { HomeSections } from "../components/smart-rent/home-sections";
 import { Button } from "../components/ui/button";
 import { useAuth } from "../lib/auth";
 import { DISTRICTS, formatPrice, PROPERTY_TYPES } from "../lib/listings";
@@ -40,7 +41,8 @@ function Home() {
     : role === "landlord" ? { to: "/landlord" as const } : null;
 
   return (
-    <main className="villa-landing">
+    <main className="villa-home">
+    <section className="villa-landing" aria-label="Find your perfect home">
       <img className="villa-backdrop" src={villa} alt="A contemporary concrete villa with warmly lit interiors and an infinity pool at sunset" width={952} height={768} fetchPriority="high" />
       <div className="villa-shade" />
       <header className="villa-header">
@@ -84,6 +86,8 @@ function Home() {
         <Button type="submit" className="villa-search-submit"><Search />Search homes</Button>
       </form>
       {!loading && user && !role && !isAdmin && <div className="villa-role-chooser"><RoleChooser /></div>}
+    </section>
+    <HomeSections />
     </main>
   );
 }
