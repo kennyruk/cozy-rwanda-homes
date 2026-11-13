@@ -20,13 +20,14 @@ export function useScrolled(threshold = 24) {
   return scrolled;
 }
 
-/** Same header as the landing page, on a solid ink bar so every page shares one look. */
-export function SiteHeader() {
+/** Same header as the landing page, on a solid ink bar so every page shares one look.
+    `forceGlass` is for pages whose content scrolls inside the page (like messages), where the window itself never scrolls. */
+export function SiteHeader({ forceGlass = false }: { forceGlass?: boolean }) {
   const { user, role, isAdmin, loading } = useAuth();
   const navigate = useNavigate();
   const qc = useQueryClient();
   const isLandlord = role === "landlord";
-  const scrolled = useScrolled();
+  const scrolled = useScrolled() || forceGlass;
   async function signOut() {
     await qc.cancelQueries();
     qc.clear();
@@ -102,8 +103,8 @@ export function SiteFooter() {
   );
 }
 
-export function PageShell({ children, footer = true }: { children: React.ReactNode; footer?: boolean }) {
+export function PageShell({ children, footer = true, glassHeader = false }: { children: React.ReactNode; footer?: boolean; glassHeader?: boolean }) {
   const { user, role, isAdmin, loading } = useAuth();
   const needsRole = !loading && !!user && !role && !isAdmin;
-  return <><SiteHeader /><main className="page-main">{needsRole ? <RoleChooser /> : children}</main>{footer && <SiteFooter />}<MobileNav /></>;
+  return <><SiteHeader forceGlass={glassHeader} /><main className="page-main">{needsRole ? <RoleChooser /> : children}</main>{footer && <SiteFooter />}<MobileNav /></>;
 }
