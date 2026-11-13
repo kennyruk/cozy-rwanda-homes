@@ -1,11 +1,13 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ChevronDown, MapPin, Plus, Search, UserRound } from "lucide-react";
-import { useState } from "react";
+import { MapPin, Plus, Search, UserRound } from "lucide-react";
+import { useEffect, useState } from "react";
 import villa from "../assets/luxury-villa-scene.jpg";
 import apartment from "../assets/modern-apartment-view.jpg.asset.json";
 import luxuryVilla from "../assets/luxury-villa-view.jpg.asset.json";
 import { Brand } from "../components/smart-rent/brand";
 import { RoleChooser } from "../components/smart-rent/account";
+import { MobileNav } from "../components/smart-rent/layout";
+import { LocationPick, PickSelect } from "../components/smart-rent/pickers";
 import { HomeSections } from "../components/smart-rent/home-sections";
 import { Button } from "../components/ui/button";
 import { useAuth } from "../lib/auth";
@@ -25,21 +27,30 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
+const TYPE_ITEMS = [{ value: "", label: "Any type" }, ...PROPERTY_TYPES.map((propertyType) => ({ value: propertyType, label: propertyType }))];
+const BUDGET_ITEMS = [{ value: "", label: "Any price" }, ...[200_000, 400_000, 700_000, 1_000_000].map((price) => ({ value: String(price), label: `Up to ${formatPrice(price)} RWF` }))];
+
 function Home() {
   const navigate = useNavigate();
   const { user, role, isAdmin, loading } = useAuth();
   const [location, setLocation] = useState("");
   const [type, setType] = useState("");
   const [budget, setBudget] = useState("");
+  // The navbar stays on screen while scrolling; it turns solid once you leave the top of the hero.
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
   const listHref = !user
     ? { to: "/auth" as const, search: { as: "landlord" as const, redirect: "/landlord" } }
     : role === "landlord" ? { to: "/landlord" as const } : null;
 
   return (
     <main className="villa-home">
-    <section className="villa-landing" aria-label="Find your perfect home">
-      <img className="villa-backdrop" src={villa} alt="A contemporary concrete villa with warmly lit interiors and an infinity pool at sunset" width={952} height={768} fetchPriority="high" />
-      <div className="villa-shade" />
+    <div className="villa-bar" data-scrolled={scrolled ? "true" : "false"}>
       <header className="villa-header">
         <Link to="/" className="villa-brand" aria-label="Smart Rent home"><Brand light /></Link>
         <nav className="villa-nav" aria-label="Main navigation">
@@ -53,6 +64,10 @@ function Home() {
           <Button asChild variant="ghost" size="icon" className="villa-account"><Link to={user ? isAdmin ? "/admin" : "/account" : "/auth"} aria-label={user ? isAdmin ? "Admin dashboard" : "My account" : "Sign in"} title={user ? isAdmin ? "Admin dashboard" : "My account" : "Sign in"}><UserRound /></Link></Button>
         </div>
       </header>
+    </div>
+    <section className="villa-landing" aria-label="Find your perfect home">
+      <img className="villa-backdrop" src={villa} alt="A contemporary concrete villa with warmly lit interiors and an infinity pool at sunset" width={952} height={768} fetchPriority="high" />
+      <div className="villa-shade" />
 
       <div className="villa-title">
         <p className="villa-eyebrow">// &nbsp;01 Find Your Perfect Home</p>
@@ -74,15 +89,15 @@ function Home() {
         event.preventDefault();
         navigate({ to: "/explore", search: { location: location || undefined, type: type || undefined, maxPrice: Number(budget) || undefined } });
       }}>
-        <label className="villa-location"><span>Location</span><div><input aria-label="Location" list="villa-districts" value={location} onChange={(event) => setLocation(event.target.value)} placeholder="Search city or district" /><ChevronDown /></div></label>
-        <datalist id="villa-districts">{["Kigali", ...DISTRICTS].map((district) => <option value={district} key={district} />)}</datalist>
-        <label><span>Property type</span><div><select aria-label="Property type" value={type} onChange={(event) => setType(event.target.value)}><option value="">Any type</option>{PROPERTY_TYPES.map((propertyType) => <option key={propertyType}>{propertyType}</option>)}</select><ChevronDown /></div></label>
-        <label><span>Budget</span><div><select aria-label="Budget" value={budget} onChange={(event) => setBudget(event.target.value)}><option value="">Any price</option>{[200_000, 400_000, 700_000, 1_000_000].map((price) => <option key={price} value={price}>Up to {formatPrice(price)} RWF</option>)}</select><ChevronDown /></div></label>
+        <label className="villa-location"><span>Location</span><LocationPick ariaLabel="Location" value={location} onChange={setLocation} suggestions={["Kigali", ...DISTRICTS]} placeholder="Search city or district" withChevron /></label>
+        <label><span>Property type</span><div><PickSelect ariaLabel="Property type" value={type} onChange={setType} items={TYPE_ITEMS} /></div></label>
+        <label><span>Budget</span><div><PickSelect ariaLabel="Budget" value={budget} onChange={setBudget} items={BUDGET_ITEMS} /></div></label>
         <Button type="submit" className="villa-search-submit"><Search />Search homes</Button>
       </form>
       {!loading && user && !role && !isAdmin && <div className="villa-role-chooser"><RoleChooser /></div>}
     </section>
     <HomeSections />
+    <MobileNav />
     </main>
   );
 }

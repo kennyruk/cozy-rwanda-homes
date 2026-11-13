@@ -577,7 +577,7 @@ h3 { font-weight: 400; }
 
 /* Landing hero: staggered entrance. */
 .villa-backdrop { animation: settle 1.4s var(--ease-out) backwards; }
-.villa-landing .villa-header { animation: fade .7s ease backwards; }
+.villa-bar .villa-header { animation: fade .7s ease backwards; }
 .villa-eyebrow { animation: rise .7s var(--ease-out) .08s backwards; }
 .villa-smart { animation: rise .9s var(--ease-out) .16s backwards; }
 .villa-rent { animation: rise .9s var(--ease-out) .28s backwards; }

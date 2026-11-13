@@ -252,3 +252,37 @@
 }
 @media (max-width: 360px) { .villa-title h1 { font-size: 72px; } .villa-preview { width: 112px; } .villa-preview:nth-child(2) { width: 125px; } }
 @media (prefers-reduced-motion: reduce) { .estate-type-image img, .estate-link svg { transition: none; } }
+
+/* ---------- Navbar that stays on screen ----------
+   Sits over the hero photo at the top of the page, then fades to a solid bar once you scroll.
+   The solid colour is a layer whose opacity changes, so the fade runs on the GPU. */
+.villa-bar { position: fixed; inset: 0 0 auto 0; z-index: 60; color: var(--villa-light); font-family: "Roboto", "Manrope", sans-serif; }
+.villa-bar::before { content: ""; position: absolute; inset: 0; background: var(--villa-ink); box-shadow: 0 6px 24px oklch(.15 .02 255 / .22); opacity: 0; transition: opacity .3s ease; pointer-events: none; }
+.villa-bar[data-scrolled="true"]::before { opacity: 1; }
+.villa-bar .villa-header { position: relative; }
+.villa-landing { margin-top: 0; }
+
+/* ---------- Search dropdowns ---------- */
+.pick-field { display: flex; align-items: center; position: relative; width: 100%; }
+.pick-trigger { appearance: none; border: 0; outline: none; background: transparent; width: 100%; min-width: 0; height: 19px; padding: 0 20px 0 0; display: flex; align-items: center; text-align: left; cursor: pointer; font: inherit; font-size: 12px; color: var(--villa-copy); }
+.pick-trigger[data-empty="true"] { color: var(--villa-muted); }
+.pick-trigger > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pick-trigger:focus-visible { outline: 2px solid var(--estate-accent); outline-offset: 4px; border-radius: 2px; }
+.pick-trigger svg { transition: transform .2s ease; }
+.pick-trigger[aria-expanded="true"] svg { transform: rotate(180deg); }
+.villa-search .pick-field input { color: var(--villa-copy); }
+
+.pick-menu { z-index: 80; min-width: max(var(--radix-popover-trigger-width), 200px); max-height: min(320px, var(--radix-popover-content-available-height)); overflow-y: auto; overscroll-behavior: contain; padding: 6px; background: var(--villa-light); color: var(--villa-copy); border: 1px solid var(--villa-line); border-radius: 6px; box-shadow: 0 18px 44px oklch(.15 .02 255 / .22); font-family: "Roboto", "Manrope", sans-serif; transform-origin: var(--radix-popover-content-transform-origin); outline: none; }
+.pick-menu[data-state="open"] { animation: pick-in .18s cubic-bezier(.22, .8, .24, 1); }
+.pick-menu[data-state="closed"] { animation: pick-out .12s ease forwards; }
+@keyframes pick-in { from { opacity: 0; transform: translateY(-6px) scale(.98); } }
+@keyframes pick-out { to { opacity: 0; transform: translateY(-4px) scale(.98); } }
+.pick-list { display: grid; gap: 2px; }
+.pick-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 4px; font-size: 13px; font-weight: 300; line-height: 1.3; cursor: pointer; outline: none; user-select: none; transition: background-color .12s ease; }
+.pick-item > span { flex: 1; }
+.pick-item svg { flex: none; width: 14px; height: 14px; color: var(--villa-muted); }
+.pick-item[aria-selected="true"] { font-weight: 500; color: var(--villa-ink); }
+.pick-item[aria-selected="true"] svg:last-child { color: var(--estate-accent); }
+.pick-item:hover, .pick-item:focus-visible, .pick-item[data-active="true"] { background: var(--estate-surface); }
+@media (max-width: 540px) { .pick-menu { min-width: 220px; } .pick-item { padding: 12px; font-size: 14px; } }
+@media (prefers-reduced-motion: reduce) { .villa-bar::before, .pick-item, .pick-trigger svg { transition: none; } }
