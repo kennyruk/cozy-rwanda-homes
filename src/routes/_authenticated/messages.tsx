@@ -94,7 +94,7 @@ function MessagesPage() {
   }
 
   return (
-    <PageShell footer={false} glassHeader>
+    <PageShell footer={false}>
       <div className={c ? "inbox has-active" : "inbox"}>
         <aside className="inbox-list">
           <h1>Messages</h1>

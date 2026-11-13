@@ -20,14 +20,12 @@ export function useScrolled(threshold = 24) {
   return scrolled;
 }
 
-/** Same header as the landing page, on a solid ink bar so every page shares one look.
-    `forceGlass` is for pages whose content scrolls inside the page (like messages), where the window itself never scrolls. */
-export function SiteHeader({ forceGlass = false }: { forceGlass?: boolean }) {
+/** Same header as the landing page, always in its liquid-glass state so every page shares one look. */
+export function SiteHeader() {
   const { user, role, isAdmin, loading } = useAuth();
   const navigate = useNavigate();
   const qc = useQueryClient();
   const isLandlord = role === "landlord";
-  const scrolled = useScrolled() || forceGlass;
   async function signOut() {
     await qc.cancelQueries();
     qc.clear();
@@ -38,7 +36,7 @@ export function SiteHeader({ forceGlass = false }: { forceGlass?: boolean }) {
   const accountLabel = user ? (isAdmin ? "Admin dashboard" : "My account") : "Log in";
   const loginLabel = user ? (isAdmin ? "Admin" : "My account") : "Log in";
   return (
-    <header className="site-header" data-scrolled={scrolled ? "true" : "false"}>
+    <header className="site-header" data-scrolled="true">
       <div className="villa-header">
         <Link to="/" className="villa-brand" aria-label="Smart Rent home"><Brand light /></Link>
         <nav className="villa-nav" aria-label="Main navigation">
@@ -103,8 +101,8 @@ export function SiteFooter() {
   );
 }
 
-export function PageShell({ children, footer = true, glassHeader = false }: { children: React.ReactNode; footer?: boolean; glassHeader?: boolean }) {
+export function PageShell({ children, footer = true }: { children: React.ReactNode; footer?: boolean }) {
   const { user, role, isAdmin, loading } = useAuth();
   const needsRole = !loading && !!user && !role && !isAdmin;
-  return <><SiteHeader forceGlass={glassHeader} /><main className="page-main">{needsRole ? <RoleChooser /> : children}</main>{footer && <SiteFooter />}<MobileNav /></>;
+  return <><SiteHeader /><main className="page-main">{needsRole ? <RoleChooser /> : children}</main>{footer && <SiteFooter />}<MobileNav /></>;
 }
