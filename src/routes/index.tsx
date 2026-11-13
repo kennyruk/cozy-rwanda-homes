@@ -6,7 +6,7 @@ import apartment from "../assets/modern-apartment-view.jpg.asset.json";
 import luxuryVilla from "../assets/luxury-villa-view.jpg.asset.json";
 import { Brand } from "../components/smart-rent/brand";
 import { RoleChooser } from "../components/smart-rent/account";
-import { MobileMenu } from "../components/smart-rent/layout";
+import { MobileNav } from "../components/smart-rent/layout";
 import { LocationPick, PickSelect } from "../components/smart-rent/pickers";
 import { HomeSections } from "../components/smart-rent/home-sections";
 import { Button } from "../components/ui/button";
@@ -62,7 +62,6 @@ function Home() {
         <div className="villa-actions">
           {listHref && <Button asChild variant="ghost" className="villa-list"><Link {...listHref}><Plus />List a property</Link></Button>}
           <Button asChild variant="ghost" className="villa-login" data-pending={loading ? "true" : "false"}><Link to={user ? isAdmin ? "/admin" : "/account" : "/auth"}>{user ? isAdmin ? "Admin" : "My account" : "Log in"}</Link></Button>
-          <MobileMenu />
         </div>
       </header>
     </div>
@@ -98,6 +97,7 @@ function Home() {
       {!loading && user && !role && !isAdmin && <div className="villa-role-chooser"><RoleChooser /></div>}
     </section>
     <HomeSections />
+    <MobileNav />
     </main>
   );
 }

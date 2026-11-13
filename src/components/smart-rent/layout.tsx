@@ -1,7 +1,6 @@
-import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { Menu, Plus, X } from "lucide-react";
+import { Home, Info, LayoutGrid, MessageCircle, Plus, Search, ShieldCheck, UserRound } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { Button } from "../ui/button";
@@ -42,60 +41,33 @@ export function SiteHeader() {
           <Button asChild variant="ghost" className="villa-login" data-pending={loading ? "true" : "false"}>
             <Link to={accountTo} title={user && role ? `${accountLabel} (${role})` : accountLabel}>{loginLabel}</Link>
           </Button>
-          <MobileMenu />
         </div>
       </div>
     </header>
   );
 }
 
-/**
- * Phone navigation: a button in the header that drops a menu down from the top bar.
- * Hidden on larger screens, where the header shows the links inline.
- */
-export function MobileMenu() {
-  const { user, role, isAdmin, loading } = useAuth();
-  const navigate = useNavigate();
-  const qc = useQueryClient();
-  const [open, setOpen] = useState(false);
-  const pathname = useRouterState({ select: (state) => state.location.pathname });
-  const isLandlord = role === "landlord";
-  useEffect(() => setOpen(false), [pathname]);
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (event: KeyboardEvent) => { if (event.key === "Escape") setOpen(false); };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open]);
-  async function signOut() {
-    setOpen(false);
-    await qc.cancelQueries();
-    qc.clear();
-    await supabase.auth.signOut();
-    navigate({ to: "/auth", replace: true });
-  }
-  const close = () => setOpen(false);
+/** Phone navigation: a bar fixed to the bottom of the screen. Hidden on larger screens, where the header shows the links. */
+export function MobileNav() {
+  const { user, role, isAdmin } = useAuth();
   return (
-    <>
-      <button type="button" className="villa-menu-btn" aria-label={open ? "Close menu" : "Open menu"} aria-expanded={open} aria-controls="mobile-menu" onClick={() => setOpen((value) => !value)}>
-        {open ? <X /> : <Menu />}
-      </button>
-      {open && <div className="villa-menu-backdrop" onClick={close} aria-hidden="true" />}
-      <nav id="mobile-menu" className="villa-menu" data-open={open ? "true" : "false"} aria-label="Menu" aria-hidden={!open} inert={!open}>
-        <Link to="/" activeOptions={{ exact: true }} activeProps={{ className: "selected" }} onClick={close}>Home</Link>
-        <Link to="/explore" activeProps={{ className: "selected" }} onClick={close}>Explore</Link>
-        <Link to="/how-it-works" activeProps={{ className: "selected" }} onClick={close}>How it works</Link>
-        <Link to="/about" activeProps={{ className: "selected" }} onClick={close}>About us</Link>
-        {user && role && <Link to="/messages" activeProps={{ className: "selected" }} onClick={close}>Messages</Link>}
-        {isLandlord && <Link to="/dashboard" activeProps={{ className: "selected" }} onClick={close}>My listings</Link>}
-        {isLandlord && <Link to="/landlord" activeProps={{ className: "selected" }} onClick={close}>List a property</Link>}
-        {!loading && !user && <Link to="/auth" search={{ as: "landlord", redirect: "/landlord" }} onClick={close}>List a property</Link>}
-        {user && <Link to={isAdmin ? "/admin" : "/account"} activeProps={{ className: "selected" }} onClick={close}>{isAdmin ? "Admin dashboard" : "My account"}</Link>}
-        {!loading && user && <button type="button" onClick={signOut}>Sign out</button>}
-      </nav>
-    </>
+    <nav className="mobile-nav">
+      <Link to="/" activeOptions={{ exact: true }} activeProps={{ className: "active" }}><Home /><span>Home</span></Link>
+      <Link to="/explore" activeProps={{ className: "active" }}><Search /><span>Explore</span></Link>
+      {role === "landlord" && <Link to="/landlord" activeProps={{ className: "active" }}><Plus /><span>List</span></Link>}
+      {role === "tenant" && <Link to="/how-it-works" activeProps={{ className: "active" }}><Info /><span>Help</span></Link>}
+      {!user && <Link to="/auth" search={{ as: "landlord", redirect: "/landlord" }}><Plus /><span>List</span></Link>}
+      <Link to="/messages" activeProps={{ className: "active" }}><MessageCircle /><span>Messages</span></Link>
+      {isAdmin && <Link to="/admin"><ShieldCheck /><span>Admin</span></Link>}
+      {role === "landlord"
+        ? <Link to="/dashboard" activeProps={{ className: "active" }}><LayoutGrid /><span>Listings</span></Link>
+        : !user
+          ? <Link to="/auth" activeProps={{ className: "active" }}><UserRound /><span>Sign in</span></Link>
+          : <Link to="/account" activeProps={{ className: "active" }}><UserRound /><span>Account</span></Link>}
+    </nav>
   );
 }
+
 
 /** Same footer as the landing page. */
 export function SiteFooter() {
@@ -119,5 +91,5 @@ export function SiteFooter() {
 export function PageShell({ children, footer = true }: { children: React.ReactNode; footer?: boolean }) {
   const { user, role, isAdmin, loading } = useAuth();
   const needsRole = !loading && !!user && !role && !isAdmin;
-  return <><SiteHeader /><main className="page-main">{needsRole ? <RoleChooser /> : children}</main>{footer && <SiteFooter />}</>;
+  return <><SiteHeader /><main className="page-main">{needsRole ? <RoleChooser /> : children}</main>{footer && <SiteFooter />}<MobileNav /></>;
 }

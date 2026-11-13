@@ -289,29 +289,12 @@
 @media (max-width: 540px) { .pick-menu { min-width: 220px; } .pick-item { padding: 12px; font-size: 14px; } }
 @media (prefers-reduced-motion: reduce) { .villa-bar::before, .pick-item, .pick-trigger svg { transition: none; } }
 
-/* ---------- Phone menu: drops down from the top bar ---------- */
-.villa-menu-btn { display: none; }
-.villa-menu, .villa-menu-backdrop { display: none; }
+/* ---------- Phone header: logo and Log in only; the links live in the bottom bar ---------- */
 @media (max-width: 720px) {
   .villa-header, .site-header .villa-header { flex-wrap: nowrap; gap: 10px; padding: 14px 20px; min-height: 0; }
   .villa-brand .brand img, .site-header .villa-brand .brand img { width: 128px; }
   .villa-nav, .site-header .villa-nav { display: none; }
   .villa-actions .villa-list { display: none; }
   .villa-actions { margin-left: auto; gap: 10px; }
-  .villa-login { height: 40px; padding: 0 18px; font-size: 13px; }
-  .villa-menu-btn { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; padding: 0; border-radius: 50%; cursor: pointer; color: var(--villa-light); background: var(--villa-caption); border: 1px solid var(--villa-clear-line); transition: background-color .2s ease; }
-  .villa-menu-btn svg { width: 18px; height: 18px; }
-  .villa-menu-btn:hover { background: var(--villa-ink); }
-
-  .villa-menu-backdrop { display: block; position: fixed; inset: 0; z-index: -1; background: oklch(.15 .02 255 / .4); animation: fade .2s ease; }
-  /* The panel slides down out of the bar. Only opacity and transform move, so it stays smooth. */
-  .villa-menu { display: grid; position: absolute; top: 100%; left: 0; right: 0; padding: 6px 20px 18px; background: var(--villa-ink); color: var(--villa-light); box-shadow: 0 24px 40px oklch(.15 .02 255 / .3); max-height: calc(100svh - 72px); overflow-y: auto; overscroll-behavior: contain;
-    opacity: 0; transform: translateY(-12px); visibility: hidden; pointer-events: none; transition: opacity .22s ease, transform .28s cubic-bezier(.22, .8, .24, 1), visibility 0s linear .28s; }
-  .villa-menu[data-open="true"] { opacity: 1; transform: none; visibility: visible; pointer-events: auto; transition-delay: 0s; }
-  .villa-menu a, .villa-menu button { display: flex; align-items: center; min-height: 52px; padding: 0; font: inherit; font-size: 16px; font-weight: 300; text-align: left; color: var(--villa-light); background: none; border: 0; border-bottom: 1px solid oklch(.99 0 0 / .12); cursor: pointer; }
-  .villa-menu a.selected { font-weight: 500; }
-  .villa-menu a.selected::before { content: ""; width: 6px; height: 6px; margin-right: 12px; border-radius: 50%; background: var(--estate-accent); }
-  .villa-menu > :last-child { border-bottom: 0; }
+  .villa-login { height: 40px; padding: 0 20px; font-size: 13px; }
 }
-@media (min-width: 721px) { .villa-menu, .villa-menu-backdrop, .villa-menu-btn { display: none !important; } }
-@media (prefers-reduced-motion: reduce) { .villa-menu { transition: none; } }

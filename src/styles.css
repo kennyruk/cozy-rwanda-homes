@@ -38,6 +38,7 @@ button,input,select,textarea { font: inherit; } button,a { -webkit-tap-highlight
 
 /* ---------- Shell ---------- */
 .page-main { min-height: calc(100vh - 72px); }
+.mobile-nav { display: none; }
 .brand { display: block; line-height: 0; }
 .brand img { width: 176px; height: auto; }
 /* Same header as the landing page, on a solid bar. The markup reuses the landing's .villa-* classes. */
@@ -350,6 +351,11 @@ h3 { font-weight: 400; }
   .check-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 720px) {
+  body { padding-bottom: 64px; }
+  .mobile-nav { display: grid; grid-template-columns: repeat(5, 1fr); position: fixed; bottom: 0; left: 0; right: 0; z-index: 60; height: 64px; padding-bottom: env(safe-area-inset-bottom); background: var(--card); border-top: 1px solid var(--border); box-shadow: 0 -8px 24px oklch(.15 .02 255 / .08); }
+  .mobile-nav a { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; font-weight: 400; color: var(--muted-foreground); }
+  .mobile-nav svg { width: 20px; height: 20px; }
+  .mobile-nav a.active { color: var(--primary); }
   .home-hero { min-height: 0; flex-direction: column; background: var(--background); }
   .home-hero-img { position: static; height: 260px; }
   .home-hero-inner { padding: 0 16px; margin-top: -64px; }
