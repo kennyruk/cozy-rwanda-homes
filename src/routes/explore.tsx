@@ -2,8 +2,13 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { PageShell } from "../components/smart-rent/layout";
+import { PickSelect } from "../components/smart-rent/pickers";
 import { CardSkeletons, EmptyState, PropertyCard } from "../components/smart-rent/ui";
 import { fetchListings, PROPERTY_TYPES } from "../lib/listings";
+
+const TYPE_ITEMS = [{ value: "", label: "All types" }, ...PROPERTY_TYPES.map((t) => ({ value: t, label: t }))];
+const PRICE_ITEMS = [{ value: "", label: "Any price" }, ...[200000, 400000, 700000, 1000000].map((n) => ({ value: String(n), label: `Up to ${n.toLocaleString("en-US")}` }))];
+const BED_ITEMS = [{ value: "", label: "Any beds" }, ...[1, 2, 3, 4].map((n) => ({ value: String(n), label: `${n}+ beds` }))];
 
 type SearchParams = { location?: string | undefined; type?: string | undefined; maxPrice?: number | undefined; beds?: number | undefined };
 
@@ -45,15 +50,9 @@ function ExplorePage() {
         <h1>Explore homes</h1>
         <form className="filters" onSubmit={(e) => { e.preventDefault(); set({ location: location || undefined }); }}>
           <input value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Search district or neighbourhood" aria-label="Location" />
-          <select value={search.type ?? ""} onChange={(e) => set({ type: e.target.value || undefined })} aria-label="Property type">
-            <option value="">All types</option>{PROPERTY_TYPES.map((t) => <option key={t}>{t}</option>)}
-          </select>
-          <select value={search.maxPrice ?? ""} onChange={(e) => set({ maxPrice: Number(e.target.value) || undefined })} aria-label="Maximum price">
-            <option value="">Any price</option><option value="200000">Up to 200,000</option><option value="400000">Up to 400,000</option><option value="700000">Up to 700,000</option><option value="1000000">Up to 1,000,000</option>
-          </select>
-          <select value={search.beds ?? ""} onChange={(e) => set({ beds: Number(e.target.value) || undefined })} aria-label="Bedrooms">
-            <option value="">Any beds</option><option value="1">1+ beds</option><option value="2">2+ beds</option><option value="3">3+ beds</option><option value="4">4+ beds</option>
-          </select>
+          <PickSelect variant="field" ariaLabel="Property type" value={search.type ?? ""} onChange={(v) => set({ type: v || undefined })} items={TYPE_ITEMS} />
+          <PickSelect variant="field" ariaLabel="Maximum price" value={search.maxPrice ? String(search.maxPrice) : ""} onChange={(v) => set({ maxPrice: Number(v) || undefined })} items={PRICE_ITEMS} />
+          <PickSelect variant="field" ariaLabel="Bedrooms" value={search.beds ? String(search.beds) : ""} onChange={(v) => set({ beds: Number(v) || undefined })} items={BED_ITEMS} />
           <button className="button button-primary">Search</button>
         </form>
       </div>

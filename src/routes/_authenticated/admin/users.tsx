@@ -4,7 +4,10 @@ import { useServerFn } from "@tanstack/react-start";
 import { Ban, Home, MessagesSquare, RotateCcw, Search, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { PickSelect } from "@/components/smart-rent/pickers";
 import { adminDeleteUser, adminListUsers, adminSetRole, adminSetSuspended, type AdminUser } from "@/lib/admin.functions";
+
+const ROLE_ITEMS = [{ value: "", label: "Not chosen", disabled: true }, { value: "tenant", label: "Tenant" }, { value: "landlord", label: "Landlord" }];
 import { ago, fmtDate } from "@/lib/admin";
 
 type UserSearch = { type?: "landlord" | "tenant" | undefined; status?: "suspended" | "untyped" | undefined };
@@ -93,11 +96,7 @@ function UsersPage() {
                   <td><strong>{u.name || "—"}</strong><small>{u.email}</small></td>
                   <td>
                     {u.isAdmin ? <span className="adm-tag adm-tag-admin">Admin{u.role ? ` · ${u.role}` : ""}</span>
-                      : <select className="adm-select" value={u.role ?? ""} disabled={busy} aria-label={`Account type for ${u.email}`} onChange={(e) => roleM.mutate({ userId: u.id, role: e.target.value as "tenant" | "landlord" })}>
-                        {!u.role && <option value="" disabled>Not chosen</option>}
-                        <option value="tenant">Tenant</option>
-                        <option value="landlord">Landlord</option>
-                      </select>}
+                      : <PickSelect variant="compact" ariaLabel={`Account type for ${u.email}`} value={u.role ?? ""} disabled={busy} onChange={(v) => roleM.mutate({ userId: u.id, role: v as "tenant" | "landlord" })} items={ROLE_ITEMS} />}
                   </td>
                   <td className="num">{u.listings ? <Link to="/admin/listings" search={{ owner: u.id }} className="adm-link">{u.listings}</Link> : "0"}</td>
                   <td>{fmtDate(u.createdAt)}</td>

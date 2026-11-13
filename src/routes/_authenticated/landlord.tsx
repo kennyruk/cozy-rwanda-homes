@@ -4,6 +4,7 @@ import { ChevronLeft, ImagePlus, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { PageShell } from "@/components/smart-rent/layout";
+import { PickSelect } from "@/components/smart-rent/pickers";
 import { EmptyState } from "@/components/smart-rent/ui";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
@@ -120,11 +121,11 @@ function LandlordPage() {
             <legend>The basics</legend>
             <label className="field">Title<input required minLength={3} maxLength={120} value={form.title} onChange={(e) => set("title", e.target.value)} placeholder="e.g. Two-bedroom apartment near Kimironko market" /></label>
             <div className="field-row">
-              <label className="field">Type<select value={form.property_type} onChange={(e) => set("property_type", e.target.value)}>{PROPERTY_TYPES.map((t) => <option key={t}>{t}</option>)}</select></label>
+              <label className="field">Type<PickSelect variant="field" ariaLabel="Type" value={form.property_type} onChange={(v) => set("property_type", v)} items={PROPERTY_TYPES.map((t) => ({ value: t, label: t }))} /></label>
               <label className="field">Monthly rent (RWF)<input required inputMode="numeric" value={form.price} onChange={(e) => { const d = e.target.value.replace(/[^0-9]/g, "").slice(0, 9); set("price", d ? formatPrice(Number(d)) : ""); }} placeholder="e.g. 750,000" /></label>
             </div>
             <div className="field-row">
-              <label className="field">District<select value={form.district} onChange={(e) => set("district", e.target.value)}>{DISTRICTS.map((d) => <option key={d}>{d}</option>)}</select></label>
+              <label className="field">District<PickSelect variant="field" ariaLabel="District" value={form.district} onChange={(v) => set("district", v)} items={DISTRICTS.map((d) => ({ value: d, label: d }))} /></label>
               <label className="field">Neighbourhood<input value={form.neighbourhood} maxLength={80} onChange={(e) => set("neighbourhood", e.target.value)} placeholder="e.g. Kimironko" /></label>
             </div>
             <div className="field-row">

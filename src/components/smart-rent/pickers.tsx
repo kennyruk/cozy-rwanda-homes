@@ -7,17 +7,21 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
  * Built on a non-modal popover, so the page never locks or shifts while a menu is open.
  */
 
-export type PickOption = { value: string; label: string };
+export type PickOption = { value: string; label: string; disabled?: boolean };
+/** bare: the landing search bar. field: boxed like the form inputs. compact: small, for tables. */
+export type PickVariant = "bare" | "field" | "compact";
 
 const options = (list: HTMLElement | null) => [...(list?.querySelectorAll<HTMLElement>('[role="option"]') ?? [])];
 
 /** A dropdown that behaves like a <select>: click or press Enter/Space/arrows to open, type a letter to jump. */
-export function PickSelect({ value, onChange, items, ariaLabel, className }: {
+export function PickSelect({ value, onChange, items, ariaLabel, className, variant = "bare", disabled = false }: {
   value: string;
   onChange: (value: string) => void;
   items: PickOption[];
   ariaLabel: string;
   className?: string;
+  variant?: PickVariant;
+  disabled?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const listId = useId();
@@ -25,12 +29,13 @@ export function PickSelect({ value, onChange, items, ariaLabel, className }: {
   const selected = items.find((item) => item.value === value) ?? items[0];
 
   function choose(next: string) {
+    if (items.find((item) => item.value === next)?.disabled) return;
     onChange(next);
     setOpen(false);
   }
 
   function onListKeyDown(event: React.KeyboardEvent) {
-    const all = options(listRef.current);
+    const all = options(listRef.current).filter((el) => el.getAttribute("aria-disabled") !== "true");
     const current = all.indexOf(document.activeElement as HTMLElement);
     let target: HTMLElement | undefined;
     if (event.key === "ArrowDown") target = all[Math.min(current + 1, all.length - 1)];
@@ -47,17 +52,18 @@ export function PickSelect({ value, onChange, items, ariaLabel, className }: {
   }
 
   return (
-    <PopoverPrimitive.Root open={open} onOpenChange={setOpen}>
+    <PopoverPrimitive.Root open={open && !disabled} onOpenChange={setOpen}>
       <PopoverPrimitive.Trigger asChild>
         <button
           type="button"
+          disabled={disabled}
           role="combobox"
           aria-label={ariaLabel}
           aria-haspopup="listbox"
           aria-expanded={open}
           aria-controls={open ? listId : undefined}
           data-empty={value === "" ? "true" : "false"}
-          className={className ? `pick-trigger ${className}` : "pick-trigger"}
+          className={["pick-trigger", variant !== "bare" && `is-${variant}`, className].filter(Boolean).join(" ")}
           onKeyDown={(event) => {
             if (event.key === "ArrowDown" || event.key === "ArrowUp") { event.preventDefault(); setOpen(true); }
           }}
@@ -68,15 +74,15 @@ export function PickSelect({ value, onChange, items, ariaLabel, className }: {
       </PopoverPrimitive.Trigger>
       <PopoverPrimitive.Portal>
         <PopoverPrimitive.Content
-          className="pick-menu"
+          className={`pick-menu pick-menu-${variant}`}
           side="bottom"
           align="start"
-          sideOffset={10}
+          sideOffset={variant === "bare" ? 10 : 6}
           collisionPadding={12}
           onOpenAutoFocus={(event) => {
             event.preventDefault();
             const all = options(listRef.current);
-            (all.find((el) => el.getAttribute("aria-selected") === "true") ?? all[0])?.focus();
+            (all.find((el) => el.getAttribute("aria-selected") === "true" && el.getAttribute("aria-disabled") !== "true") ?? all.find((el) => el.getAttribute("aria-disabled") !== "true"))?.focus();
           }}
         >
           <div ref={listRef} id={listId} role="listbox" aria-label={ariaLabel} className="pick-list" onKeyDown={onListKeyDown}>
@@ -86,6 +92,7 @@ export function PickSelect({ value, onChange, items, ariaLabel, className }: {
                 role="option"
                 tabIndex={-1}
                 aria-selected={item.value === value}
+                aria-disabled={item.disabled || undefined}
                 className="pick-item"
                 onClick={() => choose(item.value)}
                 onKeyDown={(event) => {

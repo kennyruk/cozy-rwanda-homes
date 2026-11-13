@@ -42,7 +42,7 @@ button,input,select,textarea { font: inherit; } button,a { -webkit-tap-highlight
 .brand { display: block; line-height: 0; }
 .brand img { width: 176px; height: auto; }
 /* Same header as the landing page, on a solid bar. The markup reuses the landing's .villa-* classes. */
-.site-header { position: sticky; top: 0; z-index: 50; background: var(--villa-ink); color: var(--villa-light); }
+.site-header { position: sticky; top: 0; z-index: 50; color: var(--villa-light); transition: color .3s ease; }
 .site-header .villa-header { min-height: 72px; padding-block: 12px; }
 .site-header .villa-brand .brand img { width: 150px; }
 .site-header .villa-nav { margin-left: 4%; }

@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Home, Info, LayoutGrid, MessageCircle, Plus, Search, ShieldCheck, UserRound } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,12 +8,25 @@ import { Button } from "../ui/button";
 import { RoleChooser } from "./account";
 import { Brand } from "./brand";
 
+/** True once the page has been scrolled a little, so the navbar can switch to its frosted-glass look. */
+export function useScrolled(threshold = 24) {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > threshold);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [threshold]);
+  return scrolled;
+}
+
 /** Same header as the landing page, on a solid ink bar so every page shares one look. */
 export function SiteHeader() {
   const { user, role, isAdmin, loading } = useAuth();
   const navigate = useNavigate();
   const qc = useQueryClient();
   const isLandlord = role === "landlord";
+  const scrolled = useScrolled();
   async function signOut() {
     await qc.cancelQueries();
     qc.clear();
@@ -23,7 +37,7 @@ export function SiteHeader() {
   const accountLabel = user ? (isAdmin ? "Admin dashboard" : "My account") : "Log in";
   const loginLabel = user ? (isAdmin ? "Admin" : "My account") : "Log in";
   return (
-    <header className="site-header">
+    <header className="site-header" data-scrolled={scrolled ? "true" : "false"}>
       <div className="villa-header">
         <Link to="/" className="villa-brand" aria-label="Smart Rent home"><Brand light /></Link>
         <nav className="villa-nav" aria-label="Main navigation">

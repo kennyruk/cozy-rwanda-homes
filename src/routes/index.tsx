@@ -1,12 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { MapPin, Plus, Search } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import villa from "../assets/luxury-villa-scene.jpg";
 import apartment from "../assets/modern-apartment-view.jpg.asset.json";
 import luxuryVilla from "../assets/luxury-villa-view.jpg.asset.json";
 import { Brand } from "../components/smart-rent/brand";
 import { RoleChooser } from "../components/smart-rent/account";
-import { MobileNav } from "../components/smart-rent/layout";
+import { MobileNav, useScrolled } from "../components/smart-rent/layout";
 import { LocationPick, PickSelect } from "../components/smart-rent/pickers";
 import { HomeSections } from "../components/smart-rent/home-sections";
 import { Button } from "../components/ui/button";
@@ -36,14 +36,8 @@ function Home() {
   const [location, setLocation] = useState("");
   const [type, setType] = useState("");
   const [budget, setBudget] = useState("");
-  // The navbar stays on screen while scrolling; it turns solid once you leave the top of the hero.
-  const [scrolled, setScrolled] = useState(false);
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  // The navbar stays on screen while scrolling and turns to frosted glass once you leave the top.
+  const scrolled = useScrolled();
   const listHref = !user
     ? { to: "/auth" as const, search: { as: "landlord" as const, redirect: "/landlord" } }
     : role === "landlord" ? { to: "/landlord" as const } : null;

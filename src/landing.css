@@ -258,9 +258,7 @@
 /* ---------- Navbar that stays on screen ----------
    Sits over the hero photo at the top of the page, then fades to a solid bar once you scroll.
    The solid colour is a layer whose opacity changes, so the fade runs on the GPU. */
-.villa-bar { position: fixed; inset: 0 0 auto 0; z-index: 60; color: var(--villa-light); font-family: "Roboto", "Manrope", sans-serif; }
-.villa-bar::before { content: ""; position: absolute; inset: 0; background: var(--villa-ink); box-shadow: 0 6px 24px oklch(.15 .02 255 / .22); opacity: 0; transition: opacity .3s ease; pointer-events: none; }
-.villa-bar[data-scrolled="true"]::before { opacity: 1; }
+.villa-bar { position: fixed; inset: 0 0 auto 0; z-index: 60; color: var(--villa-light); font-family: "Roboto", "Manrope", sans-serif; transition: color .3s ease; }
 .villa-bar .villa-header { position: relative; }
 .villa-landing { margin-top: 0; }
 
@@ -287,7 +285,7 @@
 .pick-item[aria-selected="true"] svg:last-child { color: var(--estate-accent); }
 .pick-item:hover, .pick-item:focus-visible, .pick-item[data-active="true"] { background: var(--estate-surface); }
 @media (max-width: 540px) { .pick-menu { min-width: 220px; } .pick-item { padding: 12px; font-size: 14px; } }
-@media (prefers-reduced-motion: reduce) { .villa-bar::before, .pick-item, .pick-trigger svg { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .villa-bar, .site-header, .villa-bar::before, .site-header::before, .site-header::after, .pick-item, .pick-trigger svg { transition: none; } }
 
 /* ---------- Phone header: logo and Log in only; the links live in the bottom bar ---------- */
 @media (max-width: 720px) {
@@ -298,3 +296,44 @@
   .villa-actions { margin-left: auto; gap: 10px; }
   .villa-login { height: 40px; padding: 0 20px; font-size: 13px; }
 }
+
+
+/* ---------- Navbar: solid on inner pages / clear over the hero, frosted glass once scrolled ----------
+   Each state is its own layer and only opacity changes, so the switch is smooth and runs on the GPU. */
+.site-header::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: var(--villa-ink); transition: opacity .3s ease; }
+.villa-bar::before, .site-header::after {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0; transition: opacity .3s ease;
+  background: linear-gradient(180deg, oklch(1 0 0 / .8), oklch(.985 .006 90 / .62));
+  -webkit-backdrop-filter: blur(22px) saturate(1.8); backdrop-filter: blur(22px) saturate(1.8);
+  border-bottom: 1px solid oklch(1 0 0 / .65);
+  box-shadow: 0 10px 34px oklch(.15 .02 255 / .12), inset 0 1px 0 oklch(1 0 0 / .85);
+}
+.villa-bar[data-scrolled="true"]::before, .site-header[data-scrolled="true"]::after { opacity: 1; }
+.site-header[data-scrolled="true"]::before { opacity: 0; }
+@supports not (backdrop-filter: blur(1px)) { .villa-bar::before, .site-header::after { background: oklch(.99 .004 90 / .96); } }
+
+.villa-bar[data-scrolled="true"], .site-header[data-scrolled="true"] { color: var(--villa-ink); }
+.villa-bar[data-scrolled="true"] .villa-brand .brand img, .site-header[data-scrolled="true"] .villa-brand .brand img { filter: none; }
+.villa-brand .brand img { transition: filter .3s ease; }
+.villa-bar[data-scrolled="true"] .villa-nav a::after, .site-header[data-scrolled="true"] .villa-nav a::after { background: var(--villa-ink); }
+.villa-bar[data-scrolled="true"] .villa-list, .site-header[data-scrolled="true"] .villa-list { color: var(--villa-ink); border-color: oklch(.27 .075 255 / .28); }
+.villa-bar[data-scrolled="true"] .villa-list:hover, .site-header[data-scrolled="true"] .villa-list:hover { background: oklch(.27 .075 255 / .07); color: var(--villa-ink); }
+.villa-bar[data-scrolled="true"] .villa-login, .site-header[data-scrolled="true"] .villa-login { background: var(--villa-ink); color: var(--villa-light); border-color: var(--villa-ink); }
+.villa-bar[data-scrolled="true"] .villa-login:hover, .site-header[data-scrolled="true"] .villa-login:hover { background: var(--villa-copy); color: var(--villa-light); }
+
+/* ---------- Dropdowns inside forms, filters and tables ---------- */
+.pick-trigger:disabled { cursor: not-allowed; opacity: .55; }
+.pick-trigger.is-field, .pick-trigger.is-compact { position: relative; background: var(--card); color: var(--foreground); transition: border-color .2s ease, box-shadow .2s ease; }
+.pick-trigger.is-field { height: 46px; padding: 0 38px 0 12px; border: 1px solid var(--input); border-radius: var(--radius-md); font-size: 14px; }
+.pick-trigger.is-field[data-empty="true"] { color: var(--muted-foreground); }
+.pick-trigger.is-field svg, .pick-trigger.is-compact svg { position: absolute; right: 12px; width: 16px; height: 16px; color: var(--muted-foreground); }
+.pick-trigger.is-field:hover:not(:disabled) { border-color: color-mix(in oklab, var(--foreground) 28%, var(--input)); }
+.pick-trigger.is-field:focus-visible, .pick-trigger.is-field[aria-expanded="true"] { outline: none; border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 20%, transparent); }
+.pick-trigger.is-compact { width: auto; min-width: 124px; height: 30px; padding: 0 28px 0 10px; border: 1px solid var(--adm-line, var(--border)); border-radius: 4px; font-size: 12.5px; }
+.pick-trigger.is-compact svg { right: 8px; width: 14px; height: 14px; }
+.pick-trigger.is-compact:focus-visible, .pick-trigger.is-compact[aria-expanded="true"] { outline: none; border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 18%, transparent); }
+.pick-menu-field { min-width: var(--radix-popover-trigger-width); }
+.pick-menu-compact { min-width: max(var(--radix-popover-trigger-width), 150px); }
+.pick-menu-compact .pick-item { padding: 8px 10px; font-size: 12.5px; }
+.pick-item[aria-disabled="true"] { opacity: .45; cursor: not-allowed; }
+.pick-item[aria-disabled="true"]:hover { background: transparent; }
