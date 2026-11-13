@@ -1,12 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { MapPin, Plus, Search, UserRound } from "lucide-react";
+import { MapPin, Plus, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import villa from "../assets/luxury-villa-scene.jpg";
 import apartment from "../assets/modern-apartment-view.jpg.asset.json";
 import luxuryVilla from "../assets/luxury-villa-view.jpg.asset.json";
 import { Brand } from "../components/smart-rent/brand";
 import { RoleChooser } from "../components/smart-rent/account";
-import { MobileNav } from "../components/smart-rent/layout";
+import { MobileMenu } from "../components/smart-rent/layout";
 import { LocationPick, PickSelect } from "../components/smart-rent/pickers";
 import { HomeSections } from "../components/smart-rent/home-sections";
 import { Button } from "../components/ui/button";
@@ -61,7 +61,8 @@ function Home() {
         </nav>
         <div className="villa-actions">
           {listHref && <Button asChild variant="ghost" className="villa-list"><Link {...listHref}><Plus />List a property</Link></Button>}
-          <Button asChild variant="ghost" size="icon" className="villa-account"><Link to={user ? isAdmin ? "/admin" : "/account" : "/auth"} aria-label={user ? isAdmin ? "Admin dashboard" : "My account" : "Sign in"} title={user ? isAdmin ? "Admin dashboard" : "My account" : "Sign in"}><UserRound /></Link></Button>
+          <Button asChild variant="ghost" className="villa-login" data-pending={loading ? "true" : "false"}><Link to={user ? isAdmin ? "/admin" : "/account" : "/auth"}>{user ? isAdmin ? "Admin" : "My account" : "Log in"}</Link></Button>
+          <MobileMenu />
         </div>
       </header>
     </div>
@@ -97,7 +98,6 @@ function Home() {
       {!loading && user && !role && !isAdmin && <div className="villa-role-chooser"><RoleChooser /></div>}
     </section>
     <HomeSections />
-    <MobileNav />
     </main>
   );
 }

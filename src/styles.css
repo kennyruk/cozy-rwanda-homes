@@ -1,4 +1,6 @@
 @import "tailwindcss" source(none);
+/* Layered so that button/utility text colours (e.g. white on dark buttons) are not overridden by links inheriting colour. */
+@layer base { a { color: inherit; text-decoration: none; } }
 @source "../src";
 @import "tw-animate-css";
 
@@ -32,7 +34,7 @@
 html { scroll-behavior: smooth; }
 body { margin: 0; background: var(--background); color: var(--foreground); font-family: var(--font-sans); font-weight: 300; letter-spacing: 0; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
 strong, b { font-weight: 500; }
-button,input,select,textarea { font: inherit; } button,a { -webkit-tap-highlight-color: transparent; } a { color: inherit; text-decoration: none; } img { display: block; max-width: 100%; }
+button,input,select,textarea { font: inherit; } button,a { -webkit-tap-highlight-color: transparent; } img { display: block; max-width: 100%; }
 
 /* ---------- Shell ---------- */
 .page-main { min-height: calc(100vh - 72px); }
@@ -45,7 +47,6 @@ button,input,select,textarea { font: inherit; } button,a { -webkit-tap-highlight
 .site-header .villa-nav { margin-left: 4%; }
 @media (min-width: 1200px) { .site-header .villa-brand .brand img { width: 170px; } }
 @media (max-width: 1100px) { .site-header .nav-secondary { display: none; } }
-@media (max-width: 540px) { .site-header .villa-nav { display: none; } .site-header .villa-header { flex-wrap: nowrap; } }
 
 .button { min-height: 46px; padding: 0 22px; border-radius: var(--radius-md); border: 1px solid transparent; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 400; font-size: 13px; cursor: pointer; transition: background-color .2s ease, border-color .2s ease, color .2s ease, transform .15s var(--ease-out); white-space: nowrap; }
 .button:active:not(:disabled) { transform: translateY(1px); }
@@ -63,7 +64,6 @@ button,input,select,textarea { font: inherit; } button,a { -webkit-tap-highlight
 .icon-button:hover { border-color: var(--foreground); }
 .icon-button.danger:hover { color: var(--destructive); border-color: var(--destructive); }
 
-.mobile-nav { display: none; }
 
 /* ---------- Type & helpers ---------- */
 h1, h2, h3 { letter-spacing: 0; font-weight: 300; }
@@ -350,7 +350,6 @@ h3 { font-weight: 400; }
   .check-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 720px) {
-  body { padding-bottom: 64px; }
   .home-hero { min-height: 0; flex-direction: column; background: var(--background); }
   .home-hero-img { position: static; height: 260px; }
   .home-hero-inner { padding: 0 16px; margin-top: -64px; }
@@ -363,11 +362,7 @@ h3 { font-weight: 400; }
   .audience { padding: 28px 24px; }
 }
 @media (max-width: 540px) {
-  .mobile-nav { display: grid; grid-template-columns: repeat(5, 1fr); position: fixed; bottom: 0; left: 0; right: 0; z-index: 60; height: 64px; background: var(--card); border-top: 1px solid var(--border); }
-  .mobile-nav a { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; font-weight: 400; color: var(--muted-foreground); }
-  .mobile-nav svg { width: 20px; height: 20px; }
-  .mobile-nav a.active { color: var(--primary); }
-  .page-main { min-height: calc(100vh - 124px); }
+  .page-main { min-height: calc(100vh - 72px); }
   .section { padding: 48px 20px; }
   .page-head { padding-top: 40px; }
   .section-tight { padding-top: 16px; }
@@ -613,7 +608,7 @@ h3 { font-weight: 400; }
 .page-loader-bar::after { content: ""; position: absolute; inset: 0; background: var(--villa-ink); transform: translateX(-100%); animation: sweep 1.1s cubic-bezier(.4, 0, .2, 1) infinite; }
 
 /* Smoother links and controls. */
-.estate-link, .villa-list, .villa-account, .villa-search-submit, .estate-cta { transition: background-color .2s ease, color .2s ease, border-color .2s ease, transform .15s var(--ease-out); }
+.estate-link, .villa-list, .villa-login, .villa-search-submit, .estate-cta { transition: background-color .2s ease, color .2s ease, border-color .2s ease, transform .15s var(--ease-out); }
 .villa-search-submit:active, .estate-cta:active, .villa-list:active { transform: translateY(1px); }
 
 @media (prefers-reduced-motion: reduce) {
