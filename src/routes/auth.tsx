@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { PageShell } from "../components/smart-rent/layout";
-import { AccountTypeTabs, PENDING_TYPE_KEY } from "../components/smart-rent/account";
+import { PENDING_TYPE_KEY } from "../components/smart-rent/account";
 import { lovable } from "@/integrations/lovable/index";
 import { supabase } from "@/integrations/supabase/client";
 import { homeFor, safeRedirect, useAuth, type AccountType } from "../lib/auth";
@@ -28,22 +28,17 @@ export const Route = createFileRoute("/auth")({
 const STORE_KEY = "smart-rent-after-login";
 
 const COPY = {
-  tenant: {
-    signin: ["Welcome back", "Sign in to message landlords about homes you like."],
-    signup: ["Create a tenant account", "Free. Browse homes and message landlords directly."],
-  },
-  landlord: {
-    signin: ["Landlord sign in", "Sign in to manage your listings and reply to tenants."],
-    signup: ["Create a landlord account", "Free. List your homes and hear from tenants directly."],
-  },
+  signin: ["Welcome back", "Sign in to Smart Rent."],
+  signup: ["Create your account", "Free. After signing up you'll choose whether you rent or list homes."],
+  forgot: ["Reset your password", "Enter your email and we'll send you a link to choose a new password."],
 } as const;
 
 function AuthPage() {
   const search = Route.useSearch();
   const { user, role, isAdmin, loading } = useAuth();
   const navigate = useNavigate();
-  const [type, setType] = useState<AccountType>(search.as ?? (/^\/(landlord|dashboard)/.test(search.redirect ?? "") ? "landlord" : "tenant"));
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin");
+  const [resetSent, setResetSent] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -60,10 +55,13 @@ function AuthPage() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
-    if (mode === "signup") {
+    if (mode === "forgot") {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/reset-password` });
+      if (error) toast.error(error.message); else setResetSent(true);
+    } else if (mode === "signup") {
       const back = new URL("/auth", window.location.origin);
       if (search.redirect) back.searchParams.set("redirect", safeRedirect(search.redirect));
-      const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { full_name: name.trim(), account_type: type }, emailRedirectTo: back.toString() } });
+      const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { full_name: name.trim() }, emailRedirectTo: back.toString() } });
       if (error) toast.error(error.message);
       else if (data.user && (data.user.identities ?? []).length === 0) {
         // The email already has an account: no confirmation email is sent in this case.
@@ -72,48 +70,48 @@ function AuthPage() {
       }
       else if (!data.session) setSent(true);
     } else {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) toast.error(error.message);
-      else {
-        const { data: r } = await supabase.from("user_roles").select("role").eq("user_id", data.user.id).maybeSingle();
-        if (r && r.role !== type) toast(`This is a ${r.role} account, so we've opened the ${r.role} side.`);
-      }
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) toast.error(error.message === "Invalid login credentials" ? "Wrong email or password. Please try again, or reset your password." : error.message);
     }
     setBusy(false);
   }
 
   async function google() {
     if (search.redirect) sessionStorage.setItem(STORE_KEY, safeRedirect(search.redirect));
-    // Only used if this Google account is new and has no account type yet.
-    if (mode === "signup") sessionStorage.setItem(PENDING_TYPE_KEY, type);
-    else sessionStorage.removeItem(PENDING_TYPE_KEY);
+    sessionStorage.removeItem(PENDING_TYPE_KEY);
     const res = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + "/auth" });
     if (res.error) toast.error("Google sign-in failed. Please try again.");
   }
 
-  const [title, sub] = COPY[type][mode];
+  const [title, sub] = COPY[mode];
   return (
     <PageShell footer={false}>
       <div className="auth-shell">
         <div className="auth-card">
           {sent ? <>
             <h1>Check your email</h1>
-            <p className="muted">We sent a confirmation link to <strong>{email}</strong>. Open it to finish creating your {type} account.</p>
+            <p className="muted">We sent a confirmation link to <strong>{email}</strong>. Open it to finish creating your account, then choose if you're a tenant or a landlord.</p>
             <p className="muted">It can take a minute. If you don't see it, check your spam or promotions folder.</p>
             <button type="button" className="button button-ghost full" onClick={() => { setSent(false); setMode("signin"); }}>Back to sign in</button>
           </> : <>
-            <AccountTypeTabs value={type} onChange={setType} />
+            {resetSent ? <>
+              <h1>Check your email</h1>
+              <p className="muted">If <strong>{email}</strong> has an account, we sent a link to set a new password. Check your spam folder too.</p>
+              <button type="button" className="button button-ghost full" onClick={() => { setResetSent(false); setMode("signin"); }}>Back to sign in</button>
+            </> : <>
             <h1>{title}</h1>
             <p className="muted">{sub}</p>
-            <button type="button" className="button button-ghost full" onClick={google}>Continue with Google</button>
-            <div className="divider"><span>or</span></div>
+            {mode !== "forgot" && <><button type="button" className="button button-ghost full" onClick={google}>Continue with Google</button>
+            <div className="divider"><span>or</span></div></>}
             <form onSubmit={submit} className="stack">
               {mode === "signup" && <label>Full name<input required value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" /></label>}
               <label>Email<input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" /></label>
-              <label>Password<input required type="password" minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} autoComplete={mode === "signin" ? "current-password" : "new-password"} /></label>
-              <button className="button button-primary full" disabled={busy}>{busy ? "Please wait…" : mode === "signin" ? "Sign in" : `Create ${type} account`}</button>
+              {mode !== "forgot" && <label>Password<input required type="password" minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} autoComplete={mode === "signin" ? "current-password" : "new-password"} /></label>}
+              {mode === "signin" && <p className="switch" style={{ textAlign: "right", margin: 0 }}><button type="button" onClick={() => setMode("forgot")}>Forgot password?</button></p>}
+              <button className="button button-primary full" disabled={busy}>{busy ? "Please wait…" : mode === "signin" ? "Sign in" : mode === "signup" ? "Create account" : "Send reset link"}</button>
             </form>
             <p className="switch">{mode === "signin" ? "New to Smart Rent?" : "Already have an account?"} <button type="button" onClick={() => setMode(mode === "signin" ? "signup" : "signin")}>{mode === "signin" ? "Create an account" : "Sign in"}</button></p>
+            </>}
           </>}
         </div>
       </div>
