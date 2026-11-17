@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { Bath, BedDouble, ImageOff, MapPin } from "lucide-react";
+import { useState } from "react";
+import { Bath, BedDouble, Eye, EyeOff, ImageOff, MapPin } from "lucide-react";
 import { formatPrice, type Listing } from "@/lib/listings";
 
 export function PropertyCard({ listing }: { listing: Listing }) {
@@ -28,4 +29,26 @@ export function CardSkeletons({ count = 3 }: { count?: number }) {
 
 export function EmptyState({ title, copy, action }: { title: string; copy: string; action?: React.ReactNode }) {
   return <div className="empty-state"><h2>{title}</h2><p>{copy}</p>{action}</div>;
+}
+
+export function PasswordField({ label, value, onChange, autoComplete = "new-password", minLength = 6, id }: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  autoComplete?: string;
+  minLength?: number;
+  id?: string;
+}) {
+  const [shown, setShown] = useState(false);
+  return (
+    <label className="pw-field">
+      <span>{label}</span>
+      <span className="pw-wrap">
+        <input id={id} required type={shown ? "text" : "password"} minLength={minLength} value={value} onChange={(e) => onChange(e.target.value)} autoComplete={autoComplete} />
+        <button type="button" className="pw-toggle" onClick={() => setShown((s) => !s)} aria-label={shown ? `Hide ${label.toLowerCase()}` : `Show ${label.toLowerCase()}`} aria-pressed={shown}>
+          {shown ? <EyeOff size={17} /> : <Eye size={17} />}
+        </button>
+      </span>
+    </label>
+  );
 }

@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { PageShell } from "../components/smart-rent/layout";
+import { PasswordField } from "../components/smart-rent/ui";
 import { PENDING_TYPE_KEY } from "../components/smart-rent/account";
 import { lovable } from "@/integrations/lovable/index";
 import { supabase } from "@/integrations/supabase/client";
@@ -106,7 +107,7 @@ function AuthPage() {
             <form onSubmit={submit} className="stack">
               {mode === "signup" && <label>Full name<input required value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" /></label>}
               <label>Email<input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" /></label>
-              {mode !== "forgot" && <label>Password<input required type="password" minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} autoComplete={mode === "signin" ? "current-password" : "new-password"} /></label>}
+              {mode !== "forgot" && <PasswordField label="Password" value={password} onChange={setPassword} autoComplete={mode === "signin" ? "current-password" : "new-password"} />}
               {mode === "signin" && <p className="switch" style={{ textAlign: "right", margin: 0 }}><button type="button" onClick={() => setMode("forgot")}>Forgot password?</button></p>}
               <button className="button button-primary full" disabled={busy}>{busy ? "Please wait…" : mode === "signin" ? "Sign in" : mode === "signup" ? "Create account" : "Send reset link"}</button>
             </form>

@@ -263,6 +263,11 @@ h3 { font-weight: 400; }
 .stack label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 500; }
 .stack input { height: 46px; transition: border-color .2s ease, box-shadow .2s ease; border: 1px solid var(--input); border-radius: var(--radius-md); padding: 0 12px; font-size: 14px; outline: none; background: var(--card); }
 .stack input:focus { border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 20%, transparent); }
+.pw-wrap { position: relative; display: block; }
+.stack .pw-wrap input { width: 100%; padding-right: 42px; }
+.pw-toggle { position: absolute; top: 50%; right: 5px; translate: 0 -50%; width: 32px; height: 32px; display: inline-grid; place-items: center; padding: 0; border: 0; border-radius: var(--radius-sm); background: transparent; color: var(--muted-foreground); cursor: pointer; transition: color .2s ease; }
+.pw-toggle:hover { color: var(--foreground); }
+.pw-toggle:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
 .switch { font-size: 14px; color: var(--muted-foreground); margin: 20px 0 0; text-align: center; }
 .switch button { border: 0; background: none; color: var(--primary); font-weight: 500; cursor: pointer; padding: 0; }
 

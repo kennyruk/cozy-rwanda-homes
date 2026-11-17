@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { PageShell } from "../components/smart-rent/layout";
+import { PasswordField } from "../components/smart-rent/ui";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/reset-password")({
@@ -42,8 +43,8 @@ function ResetPassword() {
           <h1>Choose a new password</h1>
           <p className="muted">Enter your new password twice.</p>
           <form onSubmit={submit} className="stack">
-            <label>New password<input required type="password" minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="new-password" /></label>
-            <label>Re-enter new password<input required type="password" minLength={6} value={confirm} onChange={(e) => setConfirm(e.target.value)} autoComplete="new-password" /></label>
+            <PasswordField label="New password" value={password} onChange={setPassword} />
+            <PasswordField label="Re-enter new password" value={confirm} onChange={setConfirm} />
             <button className="button button-primary full" disabled={busy}>{busy ? "Please wait…" : "Save new password"}</button>
           </form>
         </div>
