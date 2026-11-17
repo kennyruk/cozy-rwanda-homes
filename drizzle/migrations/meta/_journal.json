@@ -29,6 +29,13 @@
       "when": 1794571233865,
       "tag": "0003_restrict_profiles_and_photo_reads",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1794912643574,
+      "tag": "0004_bind_listing_photos_to_owner",
+      "breakpoints": true
     }
   ]
 }
