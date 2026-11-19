@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
+import { signPublicListingPhotos } from "@/lib/photos.functions";
 
 export type Photo = { path: string; url: string };
 export type Listing = Tables<"properties"> & { owner: { full_name: string } | null; imageUrls: string[]; photos: Photo[] };
@@ -28,9 +29,20 @@ const SELECT = "*, owner:profiles(full_name)";
 export async function signPaths(paths: string[]): Promise<Map<string, string>> {
   const map = new Map<string, string>();
   const unique = Array.from(new Set(paths));
-  if (unique.length) {
+  if (!unique.length) return map;
+  // Owners and admins can sign their own/any photos directly.
+  const { data: session } = await supabase.auth.getSession();
+  if (session.session) {
     const { data } = await supabase.storage.from(BUCKET).createSignedUrls(unique, 60 * 60 * 24);
-    data?.forEach((d) => { if (d.path && d.signedUrl) map.set(d.path, d.signedUrl); });
+    data?.forEach((d) => { if (d.path && d.signedUrl && !d.error) map.set(d.path, d.signedUrl); });
+  }
+  // Everyone else gets links only for photos on live listings, checked on the server.
+  const rest = unique.filter((p) => !map.has(p));
+  if (rest.length) {
+    try {
+      const { urls } = await signPublicListingPhotos({ data: { paths: rest } });
+      Object.entries(urls).forEach(([k, v]) => map.set(k, v));
+    } catch { /* photos stay hidden */ }
   }
   return map;
 }
