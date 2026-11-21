@@ -1,15 +1,15 @@
 /* Landing-only tokens and styles keep the marketplace and admin console unchanged. */
 .villa-home {
   --villa-ink: oklch(.27 .075 255);
-  --villa-light: oklch(.99 0 0);
+  --villa-light: var(--cream);
   --villa-copy: oklch(.31 .02 255);
-  --villa-muted: oklch(.64 .022 255);
-  --villa-line: oklch(.92 .012 255);
+  --villa-muted: oklch(.55 .02 255);
+  --villa-line: oklch(.885 .018 86);
   --villa-overlay: oklch(.18 .015 250 / .2);
   --villa-caption: oklch(.17 .012 250 / .75);
-  --villa-clear-line: oklch(.99 0 0 / .4);
-  --estate-background: oklch(.98 .004 90);
-  --estate-surface: oklch(.955 .005 90);
+  --villa-clear-line: color-mix(in oklab, var(--cream) 40%, transparent);
+  --estate-background: var(--cream-soft);
+  --estate-surface: var(--cream-deep);
   --estate-accent: oklch(.55 .085 165);
   --estate-shadow: 0 20px 60px oklch(.15 .02 255 / .2);
   background: var(--estate-background); font-family: "Roboto", "Manrope", sans-serif;
@@ -303,14 +303,14 @@
 .site-header::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: var(--villa-ink); transition: opacity .3s ease; }
 .villa-bar::before, .site-header::after {
   content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0; transition: opacity .3s ease;
-  background: linear-gradient(180deg, oklch(1 0 0 / .8), oklch(.985 .006 90 / .62));
+  background: linear-gradient(180deg, color-mix(in oklab, var(--cream) 80%, transparent), color-mix(in oklab, var(--cream-soft) 62%, transparent));
   -webkit-backdrop-filter: blur(22px) saturate(1.8); backdrop-filter: blur(22px) saturate(1.8);
-  border-bottom: 1px solid oklch(1 0 0 / .65);
-  box-shadow: 0 10px 34px oklch(.15 .02 255 / .12), inset 0 1px 0 oklch(1 0 0 / .85);
+  border-bottom: 1px solid color-mix(in oklab, var(--cream) 65%, transparent);
+  box-shadow: 0 10px 34px oklch(.15 .02 255 / .12), inset 0 1px 0 color-mix(in oklab, var(--cream) 85%, transparent);
 }
 .villa-bar[data-scrolled="true"]::before, .site-header[data-scrolled="true"]::after { opacity: 1; }
 .site-header[data-scrolled="true"]::before { opacity: 0; }
-@supports not (backdrop-filter: blur(1px)) { .villa-bar::before, .site-header::after { background: oklch(.99 .004 90 / .96); } }
+@supports not (backdrop-filter: blur(1px)) { .villa-bar::before, .site-header::after { background: color-mix(in oklab, var(--cream-soft) 96%, transparent); } }
 
 .villa-bar[data-scrolled="true"], .site-header[data-scrolled="true"] { color: var(--villa-ink); }
 .villa-bar[data-scrolled="true"] .villa-brand .brand img, .site-header[data-scrolled="true"] .villa-brand .brand img { filter: none; }

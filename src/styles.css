@@ -15,18 +15,20 @@
 
 :root {
   /* One palette for the whole site, taken from the landing page. */
-  --background: oklch(.98 .004 90); --foreground: oklch(.31 .02 255); --card: oklch(1 0 0);
-  --primary: oklch(.27 .075 255); --primary-foreground: oklch(.99 0 0);
-  --secondary: oklch(.55 .085 165); --secondary-foreground: oklch(1 0 0);
-  --muted: oklch(.955 .005 90); --muted-foreground: oklch(.52 .022 255);
+  /* Cream replaces pure white site-wide: cream = cards & light text, soft = page, deep = muted surfaces. */
+  --cream: oklch(.975 .018 86); --cream-soft: oklch(.955 .02 86); --cream-deep: oklch(.935 .022 86);
+  --background: var(--cream-soft); --foreground: oklch(.31 .02 255); --card: var(--cream);
+  --primary: oklch(.27 .075 255); --primary-foreground: var(--cream);
+  --secondary: oklch(.55 .085 165); --secondary-foreground: var(--cream);
+  --muted: var(--cream-deep); --muted-foreground: oklch(.46 .02 255);
   --accent: oklch(.665 .15 168); --accent-foreground: oklch(.2 .025 255);
-  --border: oklch(.92 .012 255); --input: oklch(.9 .012 255); --ring: oklch(.665 .15 168);
-  --success: oklch(.61 .16 151); --warning: oklch(.72 .15 76); --destructive: oklch(.58 .22 28);
+  --border: oklch(.885 .018 86); --input: oklch(.86 .018 86); --ring: oklch(.665 .15 168);
+  --success: oklch(.61 .16 151); --warning: oklch(.60 .14 76); --destructive: oklch(.58 .22 28);
   /* Landing tokens, available on every page. */
-  --villa-ink: oklch(.27 .075 255); --villa-light: oklch(.99 0 0); --villa-copy: oklch(.31 .02 255);
-  --villa-muted: oklch(.64 .022 255); --villa-line: oklch(.92 .012 255);
-  --villa-overlay: oklch(.18 .015 250 / .2); --villa-caption: oklch(.17 .012 250 / .75); --villa-clear-line: oklch(.99 0 0 / .4);
-  --estate-background: oklch(.98 .004 90); --estate-surface: oklch(.955 .005 90); --estate-accent: oklch(.55 .085 165);
+  --villa-ink: oklch(.27 .075 255); --villa-light: var(--cream); --villa-copy: oklch(.31 .02 255);
+  --villa-muted: oklch(.55 .02 255); --villa-line: oklch(.885 .018 86);
+  --villa-overlay: oklch(.18 .015 250 / .2); --villa-caption: oklch(.17 .012 250 / .75); --villa-clear-line: color-mix(in oklab, var(--cream) 40%, transparent);
+  --estate-background: var(--cream-soft); --estate-surface: var(--cream-deep); --estate-accent: oklch(.55 .085 165);
   --estate-shadow: 0 20px 60px oklch(.15 .02 255 / .2); --estate-shadow-soft: 0 18px 40px oklch(.15 .02 255 / .12);
   --ease-out: cubic-bezier(.22, .8, .24, 1);
 }
