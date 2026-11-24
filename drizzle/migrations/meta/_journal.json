@@ -43,6 +43,13 @@
       "when": 1795111093540,
       "tag": "0005_landlord_only_edits_and_private_photos",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1795515965200,
+      "tag": "0006_restrict_hidden_listings_reads",
+      "breakpoints": true
     }
   ]
 }
