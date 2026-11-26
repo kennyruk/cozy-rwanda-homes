@@ -2,8 +2,8 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { MapPin, Plus, Search } from "lucide-react";
 import { useState } from "react";
 import villa from "../assets/luxury-villa-scene.jpg";
-import apartment from "../assets/modern-apartment-view.jpg.asset.json";
-import luxuryVilla from "../assets/luxury-villa-view.jpg.asset.json";
+import apartment from "../assets/modern-apartment-view.jpg";
+import luxuryVilla from "../assets/luxury-villa-view.jpg";
 import { Brand } from "../components/smart-rent/brand";
 import { RoleChooser } from "../components/smart-rent/account";
 import { MobileNav, useScrolled } from "../components/smart-rent/layout";
@@ -70,11 +70,11 @@ function Home() {
 
       <div className="villa-previews" aria-label="Browse property types">
         <Link to="/explore" search={{ type: "Apartment", location: "Kigali" }} className="villa-preview">
-          <img src={apartment.url} alt="Modern apartment architecture" width={135} height={76} />
+          <img src={apartment} alt="Modern apartment architecture" width={135} height={76} />
           <span className="villa-preview-caption"><strong>Modern Apartment</strong><span><MapPin />Kigali</span></span>
         </Link>
         <Link to="/explore" search={{ type: "House", location: "Kigali" }} className="villa-preview">
-          <img src={luxuryVilla.url} alt="Contemporary villa architecture" width={153} height={76} />
+          <img src={luxuryVilla} alt="Contemporary villa architecture" width={153} height={76} />
           <span className="villa-preview-caption"><strong>Luxury Villa</strong><span><MapPin />Kigali</span></span>
         </Link>
       </div>
