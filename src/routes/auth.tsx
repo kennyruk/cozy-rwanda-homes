@@ -4,7 +4,6 @@ import { toast } from "sonner";
 import { PageShell } from "../components/smart-rent/layout";
 import { PasswordField } from "../components/smart-rent/ui";
 import { PENDING_TYPE_KEY } from "../components/smart-rent/account";
-import { lovable } from "@/integrations/lovable/index";
 import { supabase } from "@/integrations/supabase/client";
 import { homeFor, safeRedirect, useAuth, type AccountType } from "../lib/auth";
 
@@ -80,7 +79,10 @@ function AuthPage() {
   async function google() {
     if (search.redirect) sessionStorage.setItem(STORE_KEY, safeRedirect(search.redirect));
     sessionStorage.removeItem(PENDING_TYPE_KEY);
-    const res = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + "/auth" });
+    const res = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: new URL("/auth", window.location.origin).href },
+    });
     if (res.error) toast.error("Google sign-in failed. Please try again.");
   }
 
