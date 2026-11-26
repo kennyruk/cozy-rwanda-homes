@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { getRequest } from "@tanstack/react-start/server";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const BUCKET = "property-images";
@@ -7,7 +8,14 @@ const BUCKET = "property-images";
 export const deleteMyAccount = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { userId } = context;
+    const { userId, supabase } = context;
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      const { error } = await supabase.functions.invoke("delete-own-account", {
+        headers: { Authorization: getRequest().headers.get("authorization")! },
+      });
+      if (error) throw new Error("Could not delete account", { cause: error });
+      return { ok: true };
+    }
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     // Remove listing photos stored under the user's own folder.
